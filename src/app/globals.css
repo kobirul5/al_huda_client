@@ -180,6 +180,38 @@
   .font-arabic-naskh {
     font-family: var(--font-arabic-naskh), serif;
   }
+
+  .green-scrollbar {
+    scrollbar-color: color-mix(in oklab, var(--primary) 75%, white 25%) color-mix(in oklab, var(--muted) 88%, white 12%);
+    scrollbar-width: thin;
+  }
+
+  .green-scrollbar::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  .green-scrollbar::-webkit-scrollbar-track {
+    background: color-mix(in oklab, var(--muted) 88%, white 12%);
+    border-radius: 9999px;
+  }
+
+  .green-scrollbar::-webkit-scrollbar-thumb {
+    background: linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--primary) 68%, white 32%),
+      color-mix(in oklab, var(--primary) 88%, black 12%)
+    );
+    border-radius: 9999px;
+    border: 2px solid color-mix(in oklab, var(--muted) 88%, white 12%);
+  }
+
+  .green-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--primary) 76%, white 24%),
+      color-mix(in oklab, var(--primary) 92%, black 8%)
+    );
+  }
 }
 
 @layer utilities {

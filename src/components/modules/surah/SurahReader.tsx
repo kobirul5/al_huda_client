@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import AyahSearchBar from "@/components/modules/surah/AyahSearchBar";
 import VerseCard, { arabicFontFamilyMap, ReaderSettings } from "@/components/modules/surah/VerseCard";
 
 interface Verse {
@@ -78,6 +79,7 @@ const getInitialSettings = (): ReaderSettings => {
 export default function SurahReader({ surah }: SurahReaderProps) {
   const [settings, setSettings] = useState<ReaderSettings>(getInitialSettings);
   const [surahDetail, setSurahDetail] = useState<SurahData>(surah);
+  const [searchQuery, setSearchQuery] = useState("");
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isTranslationLoading, setIsTranslationLoading] = useState(false);
 
@@ -88,6 +90,10 @@ export default function SurahReader({ surah }: SurahReaderProps) {
   useEffect(() => {
     setSurahDetail(surah);
   }, [surah]);
+
+  useEffect(() => {
+    setSearchQuery("");
+  }, [surah.id, settings.translationLanguage]);
 
   useEffect(() => {
     let isMounted = true;
@@ -132,6 +138,20 @@ export default function SurahReader({ surah }: SurahReaderProps) {
       controller.abort();
     };
   }, [settings.translationLanguage, surah]);
+
+  const filteredVerses = useMemo(() => {
+    const normalizedQuery = searchQuery.trim().toLocaleLowerCase();
+
+    if (!normalizedQuery) {
+      return surahDetail.verses;
+    }
+
+    return surahDetail.verses.filter((verse) =>
+      [verse.text, verse.translation, verse.transliteration]
+        .filter(Boolean)
+        .some((value) => value.toLocaleLowerCase().includes(normalizedQuery))
+    );
+  }, [searchQuery, surahDetail.verses]);
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -178,7 +198,7 @@ export default function SurahReader({ surah }: SurahReaderProps) {
 
       <main className="max-w-330 mx-auto px-4 -mt-10 relative z-10">
         <div className="grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)] items-start">
-          <aside className="h-fit rounded-3xl border border-border bg-card p-6 shadow-lg lg:sticky lg:top-24">
+          <aside className="green-scrollbar rounded-3xl border border-border bg-card p-6 shadow-lg lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto">
             <div className="mb-6">
               <p className="text-xs font-bold uppercase tracking-[0.24em] text-primary/80 mb-2">Reader Settings</p>
               <h2 className="text-2xl font-bold text-foreground">Settings Panel</h2>
@@ -188,6 +208,12 @@ export default function SurahReader({ surah }: SurahReaderProps) {
             </div>
 
             <div className="space-y-6">
+              <AyahSearchBar
+                value={searchQuery}
+                onChange={setSearchQuery}
+                resultCount={filteredVerses.length}
+              />
+
               <div className="space-y-3">
                 <label htmlFor="translation-language" className="text-sm font-semibold text-foreground">
                   Translation Language
@@ -286,9 +312,18 @@ export default function SurahReader({ surah }: SurahReaderProps) {
           </aside>
 
           <div className="space-y-6">
-            {surahDetail.verses.map((verse) => (
-              <VerseCard key={verse.id} verse={verse} settings={settings} />
-            ))}
+            {filteredVerses.length > 0 ? (
+              filteredVerses.map((verse) => (
+                <VerseCard key={verse.id} verse={verse} settings={settings} />
+              ))
+            ) : (
+              <div className="rounded-3xl border border-border bg-card p-8 text-center shadow-sm">
+                <h3 className="text-xl font-bold text-foreground">No ayahs found</h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Try another word from the Arabic text, translation, or transliteration.
+                </p>
+              </div>
+            )}
 
             <div className="mt-16 flex justify-between items-center bg-card border border-border p-6 rounded-3xl shadow-lg">
               <Link
