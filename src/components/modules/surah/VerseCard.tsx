@@ -23,6 +23,8 @@ interface VerseCardProps {
 
 const VerseCard: React.FC<VerseCardProps> = ({ verse, settings }) => {
   const translationLineHeight = Math.round(settings.translationFontSize * 1.8);
+  const translationSpacing = Math.max(Math.round(settings.translationFontSize * 0.75), 14);
+  const transliterationSize = Math.max(settings.translationFontSize - 2, 14);
 
   return (
     <div className="group p-6 md:p-8 rounded-3xl border border-border bg-card hover:border-primary/30 transition-all duration-300 shadow-sm hover:shadow-xl">
@@ -43,14 +45,21 @@ const VerseCard: React.FC<VerseCardProps> = ({ verse, settings }) => {
       </div>
 
       <div className="space-y-4 pt-6 border-t border-border/50">
-        <p className="text-sm italic text-primary/70 font-medium tracking-wide">
+        <p
+          className="italic text-primary/70 font-medium tracking-wide transition-[font-size,line-height] duration-200"
+          style={{
+            fontSize: `${transliterationSize}px`,
+            lineHeight: `${Math.round(transliterationSize * 1.7)}px`,
+          }}
+        >
           {verse.transliteration}
         </p>
         <p
           className="text-muted-foreground font-medium transition-[font-size,line-height] duration-200"
           style={{
-            fontSize: settings.translationFontSize,
+            fontSize: `${settings.translationFontSize}px`,
             lineHeight: `${translationLineHeight}px`,
+            marginTop: `${translationSpacing}px`,
           }}
         >
           {verse.translation}

@@ -191,6 +191,7 @@ export default function SurahReader({ surah }: SurahReaderProps) {
                   }
                   className="w-full accent-primary"
                 />
+                
               </div>
             </div>
           </aside>
