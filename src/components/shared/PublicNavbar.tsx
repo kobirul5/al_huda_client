@@ -34,9 +34,19 @@ export default function Navbar({ user }: { user: NavbarUser }) {
               </Button>
             </>
           ) : (
-            <div className="flex items-center gap-3 rounded-full border border-primary/15 bg-primary/5 px-3 py-2">
+            <Link href="/profile" className="flex items-center gap-3 rounded-full border border-primary/15 bg-primary/5 px-3 py-2 transition hover:bg-primary/10">
+              {user.profileImage ? (
+                <Image
+                  src={user.profileImage}
+                  alt={user.email || "Profile"}
+                  width={32}
+                  height={32}
+                  className="h-8 w-8 rounded-full object-cover"
+                />
+              ) : (
                 <UserCircle className="h-6 w-6 text-primary" />
-            </div>
+              )}
+            </Link>
           )}
         </nav>
       </div>

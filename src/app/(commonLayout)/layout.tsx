@@ -1,6 +1,23 @@
 import PublicNavbar from "@/components/shared/PublicNavbar";
 import { cookies } from "next/headers";
-import jwt, { JwtPayload } from "jsonwebtoken";
+
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
+
+async function getCurrentUser(accessToken: string) {
+  const response = await fetch(`${BASE_URL}/users/profile`, {
+    headers: {
+      Authorization: accessToken,
+    },
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    return null;
+  }
+
+  const result = await response.json();
+  return result.data ?? null;
+}
 
 export default async function layout({ children }: { children: React.ReactNode }) {
   const cookieStore = await cookies();
@@ -9,19 +26,16 @@ export default async function layout({ children }: { children: React.ReactNode }
   let user: { email?: string; id?: string; profileImage?: string | null } | null = null;
   if (accessToken) {
     try {
-      const decoded = jwt.decode(accessToken);
-
-      if (decoded && typeof decoded !== "string") {
-        const payload = decoded as JwtPayload & { email?: string; id?: string };
-
+      const profile = await getCurrentUser(accessToken);
+      if (profile) {
         user = {
-          id: payload.id,
-          email: payload.email,
-          profileImage: null,
+          id: profile.id,
+          email: profile.email,
+          profileImage: profile.profileImage || null,
         };
       }
     } catch (error) {
-      console.error("JWT Decode Error in layout:", error);
+      console.error("Profile fetch error in layout:", error);
     }
   }
 
