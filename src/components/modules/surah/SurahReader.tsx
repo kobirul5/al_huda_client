@@ -198,7 +198,7 @@ export default function SurahReader({ surah }: SurahReaderProps) {
 
       <main className="max-w-330 mx-auto px-4 -mt-10 relative z-10">
         <div className="grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)] items-start">
-          <aside className="green-scrollbar rounded-3xl border border-border bg-card p-6 shadow-lg lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto">
+          <aside className="green-scrollbar rounded-3xl border border-border bg-card p-6 shadow-lg lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-scroll [scrollbar-gutter:stable]">
             <div className="mb-6">
               <p className="text-xs font-bold uppercase tracking-[0.24em] text-primary/80 mb-2">Reader Settings</p>
               <h2 className="text-2xl font-bold text-foreground">Settings Panel</h2>
