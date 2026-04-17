@@ -4,6 +4,7 @@ export interface ReaderSettings {
   arabicFont: "amiri" | "notoNaskh";
   arabicFontSize: number;
   translationFontSize: number;
+  translationLanguage: "en" | "bn";
 }
 
 export const arabicFontFamilyMap: Record<ReaderSettings["arabicFont"], string> = {
@@ -27,8 +28,8 @@ const VerseCard: React.FC<VerseCardProps> = ({ verse, settings }) => {
   const transliterationSize = Math.max(settings.translationFontSize - 2, 14);
 
   return (
-    <div className="group p-6 md:p-8 rounded-3xl border border-border bg-card hover:border-primary/30 transition-all duration-300 shadow-sm hover:shadow-xl">
-      <div className="flex justify-between items-start mb-8 gap-4">
+    <div className="group p-4 md:p-6 rounded-3xl border border-border bg-card hover:border-primary/30 transition-all duration-300 shadow-sm hover:shadow-xl">
+      <div className="flex justify-between items-start mb-4 gap-4">
         <div className="w-10 h-10 rounded-full flex items-center justify-center bg-muted text-muted-foreground font-bold text-sm">
           {verse.id}
         </div>
@@ -46,7 +47,7 @@ const VerseCard: React.FC<VerseCardProps> = ({ verse, settings }) => {
 
       <div className="space-y-4 pt-6 border-t border-border/50">
         <p
-          className="italic text-primary/70 font-medium tracking-wide transition-[font-size,line-height] duration-200"
+          className="italic text-primary/70 font-medium mb-0 tracking-wide transition-[font-size,line-height] duration-200"
           style={{
             fontSize: `${transliterationSize}px`,
             lineHeight: `${Math.round(transliterationSize * 1.7)}px`,
@@ -55,7 +56,7 @@ const VerseCard: React.FC<VerseCardProps> = ({ verse, settings }) => {
           {verse.transliteration}
         </p>
         <p
-          className="text-muted-foreground font-medium transition-[font-size,line-height] duration-200"
+          className="text-muted-foreground font-medium te transition-[font-size,line-height] duration-200"
           style={{
             fontSize: `${settings.translationFontSize}px`,
             lineHeight: `${translationLineHeight}px`,
