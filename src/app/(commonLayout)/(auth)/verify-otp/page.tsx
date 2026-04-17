@@ -112,7 +112,7 @@ export default function VerifyOtpPage() {
 
             <Button
               type="submit"
-              className="h-12 w-full text-base font-semibold transition-all hover:translate-y-[-2px] hover:shadow-lg active:translate-y-0"
+              className="h-12 w-full text-base font-semibold transition-all hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0"
               disabled={loading || otp.length < 4}
             >
               {loading ? "Verifying..." : "Verify Code"}
