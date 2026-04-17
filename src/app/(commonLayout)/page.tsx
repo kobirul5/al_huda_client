@@ -1,36 +1,44 @@
-import Link from "next/link";
 
-export default function Home() {
+// This is a Server Component by default in Next.js App Router
+
+import QuranHero from "@/components/modules/Home/QuranHero";
+import { ISurah } from "@/components/modules/Home/SurahCard";
+import SurahList from "@/components/modules/Home/SurahList";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function getSurahData(): Promise<{ surahs: ISurah[]; stats: any }> {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
+  
+  try {
+    const res = await fetch(`${apiUrl}/quran/surahs`, {
+      next: { revalidate: 3600 }, // Cache and revalidate every hour
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch surahs: ${res.status}`);
+    }
+
+    const jsonResponse = await res.json();
+    return {
+      surahs: jsonResponse?.data || [],
+      stats: jsonResponse?.stats || { totalSurahs: 0, totalVerses: 0, meccanCount: 0, medinanCount: 0 },
+    };
+  } catch (error) {
+    console.error("Error fetching surahs:", error);
+    return { surahs: [], stats: { totalSurahs: 0, totalVerses: 0, meccanCount: 0, medinanCount: 0 } };
+  }
+}
+
+export default async function Home() {
+  const { surahs, stats } = await getSurahData();
+
   return (
-    <main className="min-h-[calc(100vh-4rem)] ">
-      <section className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-5xl items-center px-4 py-12 sm:px-6 lg:px-8">
-        <div className="w-full rounded-[2rem] border border-white/70 bg-white/85 p-8 shadow-[0_20px_60px_-40px_rgba(88,70,52,0.45)] backdrop-blur-md sm:p-12">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/70">
-            Auth Access
-          </p>
-          <h1 className="mt-4 max-w-2xl text-3xl font-semibold tracking-tight text-foreground sm:text-5xl">
-            Only the navbar and authentication flow remain in this project.
-          </h1>
-          <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">
-            The app now keeps just the public navbar plus login, register, forgot password,
-            OTP verify, and reset password screens.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-4">
-            <Link
-              href="/login"
-              className="inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-transform hover:-translate-y-0.5"
-            >
-              Login
-            </Link>
-            <Link
-              href="/register"
-              className="inline-flex items-center justify-center rounded-full border border-primary/15 bg-primary/5 px-6 py-3 text-sm font-semibold text-primary transition-transform hover:-translate-y-0.5"
-            >
-              Register
-            </Link>
-          </div>
-        </div>
-      </section>
-    </main>
+    <div className="min-h-screen bg-background">
+      <QuranHero stats={stats} />
+      
+      <main className="container mx-auto">
+        <SurahList initialSurahs={surahs} />
+      </main>
+    </div>
   );
 }
