@@ -9,10 +9,12 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { registerUser } from "@/services/auth/register";
 import { useRouter } from "next/navigation";
 import {
+  Eye,
+  EyeOff,
   LucideLoader2,
   LucideArrowRight,
 } from "lucide-react";
@@ -21,6 +23,8 @@ import { cn } from "@/lib/utils";
 export default function RegistrationForm() {
   const router = useRouter();
   const [state, formAction, isPending] = useActionState(registerUser, null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
     if (state?.success) {
@@ -193,13 +197,24 @@ export default function RegistrationForm() {
               Password <span className="italic text-primary">*</span>
             </FieldLabel>
             <FieldContent>
-              <Input
-                name="password"
-                type="password"
-                placeholder="********"
-                disabled={isPending}
-                className="h-12 rounded-xl border-border bg-white transition-all focus:border-primary/50 focus:ring-primary/20"
-              />
+              <div className="relative">
+                <Input
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="********"
+                  disabled={isPending}
+                  className="h-12 rounded-xl border-border bg-white pr-12 transition-all focus:border-primary/50 focus:ring-primary/20"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((current) => !current)}
+                  className="absolute inset-y-0 right-3 flex items-center text-muted-foreground transition hover:text-primary"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  disabled={isPending}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </FieldContent>
             {getFieldError("password") && (
               <p className="mt-1.5 ml-1 animate-in slide-in-from-top-1 text-xs font-bold text-destructive fade-in duration-300">
@@ -213,13 +228,24 @@ export default function RegistrationForm() {
               Confirm Password <span className="italic text-primary">*</span>
             </FieldLabel>
             <FieldContent>
-              <Input
-                name="confirmPassword"
-                type="password"
-                placeholder="********"
-                disabled={isPending}
-                className="h-12 rounded-xl border-border bg-white transition-all focus:border-primary/50 focus:ring-primary/20"
-              />
+              <div className="relative">
+                <Input
+                  name="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder="********"
+                  disabled={isPending}
+                  className="h-12 rounded-xl border-border bg-white pr-12 transition-all focus:border-primary/50 focus:ring-primary/20"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword((current) => !current)}
+                  className="absolute inset-y-0 right-3 flex items-center text-muted-foreground transition hover:text-primary"
+                  aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                  disabled={isPending}
+                >
+                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </FieldContent>
             {getFieldError("confirmPassword") && (
               <p className="mt-1.5 ml-1 animate-in slide-in-from-top-1 text-xs font-bold text-destructive fade-in duration-300">

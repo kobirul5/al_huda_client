@@ -10,10 +10,10 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { loginUser } from "@/services/auth/login";
 import Link from "next/link";
-import { LucideArrowRight } from "lucide-react";
+import { Eye, EyeOff, LucideArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -25,6 +25,7 @@ export default function LoginForm({ quickLoginUser }: QuickLoginProps) {
   const router = useRouter();
   const [state, formAction, isPending] = useActionState(loginUser, null);
   const formRef = useRef<HTMLFormElement>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (state?.success) {
@@ -122,14 +123,25 @@ export default function LoginForm({ quickLoginUser }: QuickLoginProps) {
               </Link>
             </div>
             <FieldContent>
-              <Input
-                name="password"
-                type="password"
-                required
-                placeholder="********"
-                disabled={isPending}
-                className="h-12 rounded-xl border-border bg-white transition-all focus-visible:border-primary/50 focus-visible:ring-primary/20"
-              />
+              <div className="relative">
+                <Input
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  placeholder="********"
+                  disabled={isPending}
+                  className="h-12 rounded-xl border-border bg-white pr-12 transition-all focus-visible:border-primary/50 focus-visible:ring-primary/20"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((current) => !current)}
+                  className="absolute inset-y-0 right-3 flex items-center text-muted-foreground transition hover:text-primary"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  disabled={isPending}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </FieldContent>
             <FieldError errors={getErrors("password")} />
           </Field>
