@@ -9,8 +9,8 @@ const registerValidationZodSchema = z.object({
     email: z.string().email({
         message: "Invalid email address",
     }),
-    firstName: z.string().min(2, "First Name must be at least 2 characters").max(32, "First Name must be at most 32 characters"),
-    lastName: z.string().min(2, "Last Name must be at least 2 characters").max(32, "Last Name must be at most 32 characters").optional().or(z.literal("")),
+    firstName: z.string().min(1, "First Name is required").max(32, "First Name must be at most 32 characters"),
+    lastName: z.string().min(1, "Last Name is required").max(32, "Last Name must be at most 32 characters"),
     phoneNumber: z.string().optional().or(z.literal("")),
     address: z.string().optional().or(z.literal("")),
     gender: z.enum(["MALE", "FEMALE", "OTHER", ""]).optional(),
@@ -64,14 +64,16 @@ export const registerUser = async (_currentState: any, formData: FormData): Prom
             age: rawData.age ? parseInt(rawData.age as string) : undefined,
         };
 
-        const res = await fetch(`${BASE_URL}/users/register`, {
+        console.log("Registering user with payload:", payload);
+        const res = await fetch(`${BASE_URL}/auth/register`, {
             method: "POST",
-            body: JSON.stringify(payload),
+            body: JSON.stringify({ data: payload }),
             headers: {
                 "Content-Type": "application/json",
             }
         });
 
+        console.log("API Response Status:", res);
         const result = await res.json();
 
         if (!result.success) {
