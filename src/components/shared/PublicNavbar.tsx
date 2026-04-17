@@ -35,25 +35,7 @@ export default function Navbar({ user }: { user: NavbarUser }) {
             </>
           ) : (
             <div className="flex items-center gap-3 rounded-full border border-primary/15 bg-primary/5 px-3 py-2">
-              <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-primary/20 bg-primary/10">
-                {user.profileImage ? (
-                  <Image
-                    src={user.profileImage}
-                    alt="Profile"
-                    width={40}
-                    height={40}
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <UserCircle className="h-6 w-6 text-primary" />
-                )}
-              </div>
-              <div className="hidden sm:block">
-                <p className="text-xs font-medium uppercase tracking-[0.2em] text-primary/70">
-                  Signed In
-                </p>
-                <p className="max-w-40 truncate text-sm text-foreground">{user.email}</p>
-              </div>
+                <UserCircle className="h-6 w-6 text-primary" />
             </div>
           )}
         </nav>

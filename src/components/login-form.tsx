@@ -19,10 +19,9 @@ import { toast } from "sonner";
 
 type QuickLoginProps = {
   quickLoginUser?: { email: string; password: string };
-  quickLoginAdmin?: { email: string; password: string };
 };
 
-export default function LoginForm({ quickLoginUser, quickLoginAdmin }: QuickLoginProps) {
+export default function LoginForm({ quickLoginUser }: QuickLoginProps) {
   const router = useRouter();
   const [state, formAction, isPending] = useActionState(loginUser, null);
   const formRef = useRef<HTMLFormElement>(null);
@@ -82,28 +81,19 @@ export default function LoginForm({ quickLoginUser, quickLoginAdmin }: QuickLogi
 
   return (
     <>
-      {(quickLoginUser || quickLoginAdmin) && (
-        <div className="mb-6 grid gap-3 sm:grid-cols-2">
+      {(quickLoginUser ) && (
+        <div className="mb-6  grid gap-3 sm:grid-cols-1">
           {quickLoginUser && (
             <Button
               type="button"
               onClick={() => handleQuickLogin(quickLoginUser.email, quickLoginUser.password)}
               variant="outline"
-              className="h-11 rounded-xl border-primary/20 bg-primary/5 font-semibold text-primary hover:bg-primary/10"
+              className="h-11 rounded-xl w-full border-primary/20 bg-primary/5 font-semibold text-primary hover:bg-primary/10"
             >
               Quick User
             </Button>
           )}
-          {quickLoginAdmin && (
-            <Button
-              type="button"
-              onClick={() => handleQuickLogin(quickLoginAdmin.email, quickLoginAdmin.password)}
-              variant="outline"
-              className="h-11 rounded-xl border-primary/20 bg-primary/5 font-semibold text-primary hover:bg-primary/10"
-            >
-              Quick Admin
-            </Button>
-          )}
+         
         </div>
       )}
 

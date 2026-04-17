@@ -35,7 +35,7 @@ const VerseCard: React.FC<VerseCardProps> = ({ verse, settings }) => {
         </div>
 
         <p
-          className="text-right leading-[2] text-foreground flex-1 transition-[font-size] duration-200"
+          className="text-right leading-loose text-foreground flex-1 transition-[font-size] duration-200"
           style={{
             fontFamily: arabicFontFamilyMap[settings.arabicFont],
             fontSize: `${settings.arabicFontSize}px`,

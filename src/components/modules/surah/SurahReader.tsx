@@ -78,6 +78,7 @@ const getInitialSettings = (): ReaderSettings => {
 export default function SurahReader({ surah }: SurahReaderProps) {
   const [settings, setSettings] = useState<ReaderSettings>(getInitialSettings);
   const [surahDetail, setSurahDetail] = useState<SurahData>(surah);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isTranslationLoading, setIsTranslationLoading] = useState(false);
 
   useEffect(() => {

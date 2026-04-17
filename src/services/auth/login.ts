@@ -14,6 +14,32 @@ const loginValidationZodSchema = z.object({
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
 
+const persistAuthToken = async (cookieHeader: string[], tokenFromBody?: string) => {
+    const cookieStore = await cookies();
+    let savedToken = tokenFromBody;
+
+    if (cookieHeader && cookieHeader.length > 0) {
+        cookieHeader.forEach((cookie) => {
+            const parsedCookie = parse(cookie);
+            const cookieName = Object.keys(parsedCookie)[0];
+            const cookieValue = parsedCookie[cookieName];
+
+            if ((cookieName === "token" || cookieName === "accessToken") && cookieValue) {
+                savedToken = cookieValue;
+            }
+        });
+    }
+
+    if (savedToken) {
+        cookieStore.set("accessToken", savedToken, {
+            httpOnly: true,
+            path: "/",
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+        });
+    }
+};
+
 
 export const loginUser = async (_currentState: any, formData: any): Promise<any> => {
 
@@ -54,26 +80,7 @@ export const loginUser = async (_currentState: any, formData: any): Promise<any>
         }
 
         const cookieHeader = res.headers.getSetCookie();
-        const cookieStore = await cookies();
-
-        if (cookieHeader && cookieHeader.length > 0) {
-            cookieHeader.forEach((cookie) => {
-                const parsedCookie = parse(cookie);
-                const cookieName = Object.keys(parsedCookie)[0];
-                const cookieValue = parsedCookie[cookieName];
-
-                if ((cookieName === "accessToken" || cookieName === "refreshToken") && cookieValue) {
-                    cookieStore.set(cookieName as string, cookieValue, {
-                        httpOnly: true,
-                        path: parsedCookie.path || "/",
-                        maxAge: parsedCookie['Max-Age'] ? parseInt(parsedCookie['Max-Age']) : undefined,
-                        expires: parsedCookie.expires ? new Date(parsedCookie.expires) : undefined,
-                        secure: process.env.NODE_ENV === "production",
-                        sameSite: (parsedCookie.sameSite as any) || "lax",
-                    });
-                }
-            })
-        }
+        await persistAuthToken(cookieHeader, result?.data?.token);
 
         return result
 
