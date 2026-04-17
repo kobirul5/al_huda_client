@@ -1,6 +1,3 @@
-
-// This is a Server Component by default in Next.js App Router
-
 import QuranHero from "@/components/modules/Home/QuranHero";
 import { ISurah } from "@/components/modules/Home/SurahCard";
 import SurahList from "@/components/modules/Home/SurahList";

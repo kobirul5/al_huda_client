@@ -173,6 +173,16 @@
 }
 
 @layer utilities {
+  .font-arabic-amiri {
+    font-family: var(--font-arabic-amiri), serif;
+  }
+
+  .font-arabic-naskh {
+    font-family: var(--font-arabic-naskh), serif;
+  }
+}
+
+@layer utilities {
   .no-scrollbar::-webkit-scrollbar,
   .scrollbar-hide::-webkit-scrollbar {
     display: none;

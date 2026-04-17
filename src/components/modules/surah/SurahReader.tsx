@@ -1,0 +1,226 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import VerseCard, { ReaderSettings } from "@/components/modules/surah/VerseCard";
+
+interface SurahReaderProps {
+  surah: {
+    id: number;
+    name: string;
+    transliteration: string;
+    type: string;
+    total_verses: number;
+    verses: {
+      id: number;
+      text: string;
+      translation: string;
+      transliteration: string;
+    }[];
+  };
+}
+
+const STORAGE_KEY = "surah-reader-settings";
+
+const defaultSettings: ReaderSettings = {
+  arabicFont: "amiri",
+  arabicFontSize: 36,
+  translationFontSize: 18,
+};
+
+const arabicFontOptions: Array<{
+  value: ReaderSettings["arabicFont"];
+  label: string;
+  previewClass: string;
+}> = [
+  { value: "amiri", label: "Amiri", previewClass: "font-arabic-amiri" },
+  { value: "notoNaskh", label: "Noto Naskh Arabic", previewClass: "font-arabic-naskh" },
+];
+
+const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
+
+const getInitialSettings = (): ReaderSettings => {
+  if (typeof window === "undefined") {
+    return defaultSettings;
+  }
+
+  const rawSettings = window.localStorage.getItem(STORAGE_KEY);
+  if (!rawSettings) {
+    return defaultSettings;
+  }
+
+  try {
+    const parsed = JSON.parse(rawSettings) as Partial<ReaderSettings>;
+    return {
+      arabicFont: parsed.arabicFont === "notoNaskh" ? "notoNaskh" : "amiri",
+      arabicFontSize: clamp(parsed.arabicFontSize ?? defaultSettings.arabicFontSize, 28, 56),
+      translationFontSize: clamp(parsed.translationFontSize ?? defaultSettings.translationFontSize, 14, 28),
+    };
+  } catch {
+    window.localStorage.removeItem(STORAGE_KEY);
+    return defaultSettings;
+  }
+};
+
+export default function SurahReader({ surah }: SurahReaderProps) {
+  const [settings, setSettings] = useState<ReaderSettings>(getInitialSettings);
+
+  useEffect(() => {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+  }, [settings]);
+
+  const selectedFont = arabicFontOptions.find((option) => option.value === settings.arabicFont);
+
+  return (
+    <div className="min-h-screen bg-background pb-20">
+      <section className="relative pt-24 pb-16 px-6 text-center overflow-hidden bg-[#0F172A]">
+        <div className="absolute inset-0 opacity-10 pointer-events-none">
+          <div className="absolute top-0 right-0 w-[50%] h-[100%] bg-primary rounded-full blur-[150px]" />
+        </div>
+
+        <div className="relative max-w-4xl mx-auto">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-primary transition-colors mb-10 group"
+          >
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="group-hover:-translate-x-1 transition-transform">
+              <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            Back to Home
+          </Link>
+
+          <div className="flex flex-col items-center">
+            <div className="w-16 h-16 rounded-2xl bg-primary/20 border border-primary/30 flex items-center justify-center text-primary font-bold text-xl mb-6 shadow-glow">
+              {surah.id}
+            </div>
+            <h1 className={`text-6xl md:text-7xl font-bold text-white mb-4 tracking-tight ${selectedFont?.previewClass ?? "font-arabic-amiri"}`}>
+              {surah.name}
+            </h1>
+            <p className="text-xl text-slate-400 font-medium mb-8">
+              {surah.transliteration} - {surah.type}
+            </p>
+
+            <div className="flex gap-4">
+              <span className="px-5 py-2 rounded-full bg-white/5 border border-white/10 text-white text-sm font-bold">
+                {surah.total_verses} Verses
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <main className="max-w-330 mx-auto px-4 -mt-10 relative z-10">
+        <div className="grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)] items-start">
+          <aside className="h-fit rounded-3xl border border-border bg-card p-6 shadow-lg lg:sticky lg:top-24">
+            <div className="mb-6">
+              <p className="text-xs font-bold uppercase tracking-[0.24em] text-primary/80 mb-2">Reader Settings</p>
+              <h2 className="text-2xl font-bold text-foreground">Settings Panel</h2>
+              <p className="text-sm text-muted-foreground mt-2">
+                Adjust the Arabic font and text size to your preference. Your settings will be saved in the browser.
+              </p>
+            </div>
+
+            <div className="space-y-6">
+              <div className="space-y-3">
+                <label htmlFor="arabic-font" className="text-sm font-semibold text-foreground">
+                  Arabic Font Selection
+                </label>
+                <select
+                  id="arabic-font"
+                  value={settings.arabicFont}
+                  onChange={(event) =>
+                    setSettings((current) => ({
+                      ...current,
+                      arabicFont: event.target.value as ReaderSettings["arabicFont"],
+                    }))
+                  }
+                  className="w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none transition focus:border-primary"
+                >
+                  {arabicFontOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex items-center justify-between gap-4">
+                  <label htmlFor="arabic-font-size" className="text-sm font-semibold text-foreground">
+                    Arabic Font Size
+                  </label>
+                  <span className="text-sm font-bold text-primary">{settings.arabicFontSize}px</span>
+                </div>
+                <input
+                  id="arabic-font-size"
+                  type="range"
+                  min="28"
+                  max="56"
+                  step="2"
+                  value={settings.arabicFontSize}
+                  onChange={(event) =>
+                    setSettings((current) => ({
+                      ...current,
+                      arabicFontSize: Number(event.target.value),
+                    }))
+                  }
+                  className="w-full accent-primary"
+                />
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex items-center justify-between gap-4">
+                  <label htmlFor="translation-font-size" className="text-sm font-semibold text-foreground">
+                    Translation Font Size
+                  </label>
+                  <span className="text-sm font-bold text-primary">{settings.translationFontSize}px</span>
+                </div>
+                <input
+                  id="translation-font-size"
+                  type="range"
+                  min="14"
+                  max="28"
+                  step="1"
+                  value={settings.translationFontSize}
+                  onChange={(event) =>
+                    setSettings((current) => ({
+                      ...current,
+                      translationFontSize: Number(event.target.value),
+                    }))
+                  }
+                  className="w-full accent-primary"
+                />
+              </div>
+            </div>
+          </aside>
+
+          <div className="space-y-6">
+            {surah.verses.map((verse) => (
+              <VerseCard key={verse.id} verse={verse} settings={settings} />
+            ))}
+
+            <div className="mt-16 flex justify-between items-center bg-card border border-border p-6 rounded-3xl shadow-lg">
+              <Link
+                href={surah.id > 1 ? `/surah/${surah.id - 1}` : "/"}
+                className={`flex items-center gap-3 px-6 py-3 rounded-2xl font-bold transition-all ${
+                  surah.id > 1 ? "bg-muted text-foreground hover:bg-primary hover:text-white" : "opacity-0 pointer-events-none"
+                }`}
+              >
+                Previous Surah
+              </Link>
+
+              <Link
+                href={surah.id < 114 ? `/surah/${surah.id + 1}` : "/"}
+                className={`flex items-center gap-3 px-6 py-3 rounded-2xl font-bold transition-all ${
+                  surah.id < 114 ? "bg-primary text-white hover:shadow-glow" : "opacity-0 pointer-events-none"
+                }`}
+              >
+                Next Surah
+              </Link>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
