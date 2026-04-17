@@ -6,6 +6,11 @@ export interface ReaderSettings {
   translationFontSize: number;
 }
 
+export const arabicFontFamilyMap: Record<ReaderSettings["arabicFont"], string> = {
+  amiri: "var(--font-arabic-amiri), serif",
+  notoNaskh: "var(--font-arabic-naskh), serif",
+};
+
 interface VerseCardProps {
   verse: {
     id: number;
@@ -15,11 +20,6 @@ interface VerseCardProps {
   };
   settings: ReaderSettings;
 }
-
-const arabicFontClassMap: Record<ReaderSettings["arabicFont"], string> = {
-  amiri: "font-arabic-amiri",
-  notoNaskh: "font-arabic-naskh",
-};
 
 const VerseCard: React.FC<VerseCardProps> = ({ verse, settings }) => {
   const translationLineHeight = Math.round(settings.translationFontSize * 1.8);
@@ -32,8 +32,11 @@ const VerseCard: React.FC<VerseCardProps> = ({ verse, settings }) => {
         </div>
 
         <p
-          className={`text-right leading-[2] text-foreground flex-1 ${arabicFontClassMap[settings.arabicFont]}`}
-          style={{ fontSize: `${settings.arabicFontSize}px` }}
+          className="text-right leading-[2] text-foreground flex-1 transition-[font-size] duration-200"
+          style={{
+            fontFamily: arabicFontFamilyMap[settings.arabicFont],
+            fontSize: `${settings.arabicFontSize}px`,
+          }}
         >
           {verse.text}
         </p>

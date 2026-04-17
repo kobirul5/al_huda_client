@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import VerseCard, { ReaderSettings } from "@/components/modules/surah/VerseCard";
+import VerseCard, { arabicFontFamilyMap, ReaderSettings } from "@/components/modules/surah/VerseCard";
 
 interface SurahReaderProps {
   surah: {
@@ -31,10 +31,10 @@ const defaultSettings: ReaderSettings = {
 const arabicFontOptions: Array<{
   value: ReaderSettings["arabicFont"];
   label: string;
-  previewClass: string;
+  previewText: string;
 }> = [
-  { value: "amiri", label: "Amiri", previewClass: "font-arabic-amiri" },
-  { value: "notoNaskh", label: "Noto Naskh Arabic", previewClass: "font-arabic-naskh" },
+  { value: "amiri", label: "Amiri", previewText: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ" },
+  { value: "notoNaskh", label: "Noto Naskh Arabic", previewText: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ" },
 ];
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
@@ -69,13 +69,11 @@ export default function SurahReader({ surah }: SurahReaderProps) {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
   }, [settings]);
 
-  const selectedFont = arabicFontOptions.find((option) => option.value === settings.arabicFont);
-
   return (
     <div className="min-h-screen bg-background pb-20">
       <section className="relative pt-24 pb-16 px-6 text-center overflow-hidden bg-[#0F172A]">
         <div className="absolute inset-0 opacity-10 pointer-events-none">
-          <div className="absolute top-0 right-0 w-[50%] h-[100%] bg-primary rounded-full blur-[150px]" />
+          <div className="absolute top-0 right-0 w-[50%] h-full bg-primary rounded-full blur-[150px]" />
         </div>
 
         <div className="relative max-w-4xl mx-auto">
@@ -93,7 +91,10 @@ export default function SurahReader({ surah }: SurahReaderProps) {
             <div className="w-16 h-16 rounded-2xl bg-primary/20 border border-primary/30 flex items-center justify-center text-primary font-bold text-xl mb-6 shadow-glow">
               {surah.id}
             </div>
-            <h1 className={`text-6xl md:text-7xl font-bold text-white mb-4 tracking-tight ${selectedFont?.previewClass ?? "font-arabic-amiri"}`}>
+            <h1
+              className="text-6xl md:text-7xl font-bold text-white mb-4 tracking-tight"
+              style={{ fontFamily: arabicFontFamilyMap[settings.arabicFont] }}
+            >
               {surah.name}
             </h1>
             <p className="text-xl text-slate-400 font-medium mb-8">
