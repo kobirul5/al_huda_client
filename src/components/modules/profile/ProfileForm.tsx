@@ -49,7 +49,7 @@ export default function ProfileForm({ user }: ProfileFormProps) {
 
   const getErrors = (fieldName: string) => {
     if (!state || !("errors" in state) || !state.errors) return [];
-    return state.errors.filter((error: { field: string; message: string }) => error.field === fieldName);
+    return state.errors.filter((error: { field: PropertyKey; message: string }) => error.field === fieldName);
   };
 
   return (
