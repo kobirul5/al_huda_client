@@ -21,8 +21,8 @@ export async function generateStaticParams() {
 
 async function getHadiths(bookName: string) {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
-  const res = await fetch(`${apiUrl}/hadith/${bookName}`, {
-    cache: "force-cache", // Ensures it's fully static
+  const res = await fetch(`${apiUrl}/hadith/${bookName}?page=1&limit=20`, {
+    cache: "no-store", // Since we want fresh data for pagination
   });
 
   if (!res.ok) {
@@ -35,7 +35,7 @@ async function getHadiths(bookName: string) {
 
 export default async function HadithBookPage({ params }: { params: Promise<{ bookName: string }> }) {
   const { bookName } = await params;
-  const hadiths = await getHadiths(bookName);
+  const initialHadiths = await getHadiths(bookName);
 
-  return <HadithReader bookName={bookName} hadiths={hadiths} />;
+  return <HadithReader bookName={bookName} initialHadiths={initialHadiths} />;
 }
