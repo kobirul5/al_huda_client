@@ -89,3 +89,20 @@ export const resetPassword = async (payload: any): Promise<any> => {
         return { success: false, message: "Something went wrong" };
     }
 }
+
+export const resendOtp = async (email: string): Promise<any> => {
+    try {
+        const res = await fetch(`${BASE_URL}/auth/resend-otp`, {
+            method: "POST",
+            body: JSON.stringify({ email }),
+            headers: {
+                "Content-Type": "application/json",
+            }
+        });
+
+        return await res.json();
+    } catch (error) {
+        console.error(error);
+        return { success: false, message: "Something went wrong" };
+    }
+}

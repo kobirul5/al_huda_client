@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import ProfileForm from "@/components/modules/profile/ProfileForm";
+import LogoutButton from "@/components/modules/profile/LogoutButton";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
 
@@ -106,6 +107,8 @@ export default async function ProfilePage() {
                 <span className="font-medium text-foreground capitalize">{profile.role?.toLowerCase()}</span>
               </div>
             </div>
+            
+            <LogoutButton />
           </div>
 
           <ProfileForm

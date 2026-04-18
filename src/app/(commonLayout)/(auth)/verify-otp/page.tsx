@@ -14,11 +14,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { verifyOtp } from "@/services/auth/forgot-password";
+import { verifyOtp, resendOtp } from "@/services/auth/forgot-password";
 
 export default function VerifyOtpPage() {
   const [otp, setOtp] = useState("");
-  const [loading, setLoading] = useState(false);
+   const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
   const email =
@@ -30,7 +31,19 @@ export default function VerifyOtpPage() {
     if (!email || !otpType) {
       router.push("/foget-password");
     }
-  }, [email, otpType, router]);
+   }, [email, otpType, router]);
+
+  const handleResend = async () => {
+    if (!email) return;
+    setResending(true);
+    const res = await resendOtp(email);
+    if (res.success) {
+      toast.success("New OTP sent successfully!");
+    } else {
+      toast.error(res.message || "Failed to resend OTP");
+    }
+    setResending(false);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -123,8 +136,13 @@ export default function VerifyOtpPage() {
           <div className="pt-2 text-center">
             <p className="text-sm text-muted-foreground">
               Didn&apos;t receive code?{" "}
-              <button type="button" className="font-medium text-primary hover:underline">
-                Resend
+              <button 
+                type="button" 
+                onClick={handleResend}
+                disabled={resending}
+                className="font-medium text-primary hover:underline disabled:opacity-50"
+              >
+                {resending ? "Sending..." : "Resend"}
               </button>
             </p>
           </div>

@@ -33,7 +33,7 @@ export default function RegistrationForm() {
         sessionStorage.setItem("resetEmail", email);
         sessionStorage.setItem("otpType", "verify");
       }
-      router.push("/");
+      router.push("/verify-otp");
     }
   }, [state, router]);
 
