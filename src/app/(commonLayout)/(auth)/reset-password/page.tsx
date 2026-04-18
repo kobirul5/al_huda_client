@@ -47,7 +47,7 @@ export default function ResetPasswordPage() {
         description: "Your password has been updated.",
       });
       setTimeout(() => {
-        router.push("/login");
+        router.push("/");
       }, 2000);
     } else {
       setError(res.message || "Failed to reset password");
@@ -68,7 +68,7 @@ export default function ResetPasswordPage() {
           </div>
           <CardTitle className="mb-4 text-3xl font-bold">Password Reset!</CardTitle>
           <CardDescription className="text-lg">
-            Your password has been successfully updated. Redirecting to login...
+            Your password has been successfully updated. Redirecting to home...
           </CardDescription>
         </Card>
       </div>

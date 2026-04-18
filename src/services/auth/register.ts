@@ -5,24 +5,21 @@ import z from "zod";
 import { parse } from "cookie";
 import { cookies } from "next/headers";
 
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
+
 const registerValidationZodSchema = z.object({
     email: z.string().email({
         message: "Invalid email address",
     }),
     firstName: z.string().min(1, "First Name is required").max(32, "First Name must be at most 32 characters"),
     lastName: z.string().min(1, "Last Name is required").max(32, "Last Name must be at most 32 characters"),
-    phoneNumber: z.string().optional().or(z.literal("")),
-    address: z.string().optional().or(z.literal("")),
-    gender: z.enum(["MALE", "FEMALE", "OTHER", ""]).optional(),
-    age: z.string().optional().or(z.literal("")),
+    location: z.string().optional().or(z.literal("")),
     password: z.string().min(6, "Password must be at least 6 characters").max(32, "Password must be at most 32 characters"),
     confirmPassword: z.string().min(6, "Password must be at least 6 characters").max(32, "Password must be at most 32 characters"),
 }).refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
     path: ["confirmPassword"],
 });
-
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
 
 const persistAuthToken = async (cookieHeader: string[], tokenFromBody?: string) => {
     const cookieStore = await cookies();
@@ -59,10 +56,7 @@ export const registerUser = async (_currentState: any, formData: FormData): Prom
             confirmPassword: formData.get("confirmPassword"),
             firstName: formData.get("firstName"),
             lastName: formData.get("lastName"),
-            phoneNumber: formData.get("phoneNumber"),
-            address: formData.get("address"),
-            gender: formData.get("gender"),
-            age: formData.get("age"),
+            location: formData.get("location"),
         };
 
         const validatedField = registerValidationZodSchema.safeParse(rawData);
@@ -84,10 +78,7 @@ export const registerUser = async (_currentState: any, formData: FormData): Prom
             password: rawData.password,
             firstName: rawData.firstName,
             lastName: rawData.lastName,
-            phoneNumber: rawData.phoneNumber,
-            address: rawData.address,
-            gender: rawData.gender || undefined,
-            age: rawData.age ? parseInt(rawData.age as string) : undefined,
+            location: rawData.location,
         };
 
         console.log("Registering user with payload:", payload);

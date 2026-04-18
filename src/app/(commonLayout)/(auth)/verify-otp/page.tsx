@@ -18,20 +18,20 @@ import { verifyOtp, resendOtp } from "@/services/auth/forgot-password";
 
 export default function VerifyOtpPage() {
   const [otp, setOtp] = useState("");
-   const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
-  const email =
-    typeof window === "undefined" ? "" : (sessionStorage.getItem("resetEmail") ?? "");
-  const otpType =
-    typeof window === "undefined" ? null : sessionStorage.getItem("otpType");
+  const email = typeof window === "undefined" ? "" : (sessionStorage.getItem("resetEmail") ?? "");
+  // const otpType = typeof window === "undefined" ? null : sessionStorage.getItem("otpType");
 
   useEffect(() => {
-    if (!email || !otpType) {
+    const storedEmail = sessionStorage.getItem("resetEmail");
+    const storedType = sessionStorage.getItem("otpType");
+    if (!storedEmail || !storedType) {
       router.push("/foget-password");
     }
-   }, [email, otpType, router]);
+  }, [router]);
 
   const handleResend = async () => {
     if (!email) return;

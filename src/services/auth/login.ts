@@ -5,14 +5,14 @@ import z from "zod";
 import { parse } from "cookie";
 import { cookies } from "next/headers";
 
-const loginValidationZodSchema = z.object({
-    email: z.email({
-        error: "Invalid email address",
-    }),
-    password: z.string().min(4, "Password must be at least 6 characters").max(32, "Password must be at most 32 characters"),
-})
-
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
+
+const loginValidationZodSchema = z.object({
+    email: z.string().email({
+        message: "Invalid email address",
+    }),
+    password: z.string().min(4, "Password must be at least 4 characters").max(32, "Password must be at most 32 characters"),
+})
 
 const persistAuthToken = async (cookieHeader: string[], tokenFromBody?: string) => {
     const cookieStore = await cookies();
@@ -43,8 +43,6 @@ const persistAuthToken = async (cookieHeader: string[], tokenFromBody?: string) 
 
 export const loginUser = async (_currentState: any, formData: any): Promise<any> => {
 
-    // let accessTokenObj: null | any = null;
-    // let refreshTokenObj: null | any = null;
 
     try {
         const loginData = {
