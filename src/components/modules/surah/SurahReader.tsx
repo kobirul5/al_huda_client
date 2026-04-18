@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import AyahSearchBar from "@/components/modules/surah/AyahSearchBar";
 import VerseCard, { arabicFontFamilyMap, ReaderSettings } from "@/components/modules/surah/VerseCard";
+import { useBookmark } from "@/hooks/useBookmark";
+import { Bookmark } from "lucide-react";
 
 interface Verse {
   id: number;
@@ -75,6 +77,35 @@ const getInitialSettings = (): ReaderSettings => {
     return defaultSettings;
   }
 };
+
+function BookmarkButton({ surahDetail }: { surahDetail: SurahData }) {
+  const { isBookmarked, toggleBookmark } = useBookmark({
+    id: surahDetail.id,
+    name: surahDetail.name,
+    transliteration: surahDetail.transliteration,
+    total_verses: surahDetail.total_verses,
+  });
+
+  return (
+    <div className="flex items-center gap-3">
+      <span className="px-5 py-2 rounded-full bg-white/5 border border-white/10 text-white text-sm font-bold">
+        {surahDetail.total_verses} Verses
+      </span>
+      <button
+        onClick={toggleBookmark}
+        title={isBookmarked ? "Remove Bookmark" : "Bookmark this Surah"}
+        className={`flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-bold transition-all duration-200 ${
+          isBookmarked
+            ? "bg-primary border-primary text-white shadow-lg shadow-primary/30"
+            : "bg-white/5 border-white/10 text-white/70 hover:bg-primary/20 hover:border-primary/50 hover:text-white"
+        }`}
+      >
+        <Bookmark className={`h-4 w-4 ${isBookmarked ? "fill-white" : ""}`} />
+        {isBookmarked ? "Bookmarked" : "Bookmark"}
+      </button>
+    </div>
+  );
+}
 
 export default function SurahReader({ surah }: SurahReaderProps) {
   const [settings, setSettings] = useState<ReaderSettings>(getInitialSettings);
@@ -175,11 +206,7 @@ export default function SurahReader({ surah }: SurahReaderProps) {
               {surahDetail.transliteration} - {surahDetail.type}
             </p>
 
-            <div className="flex gap-4">
-              <span className="px-5 py-2 rounded-full bg-white/5 border border-white/10 text-white text-sm font-bold">
-                {surahDetail.total_verses} Verses
-              </span>
-            </div>
+            <BookmarkButton surahDetail={surahDetail} />
 
             <div className="w-full mt-5">
               <Link

@@ -35,8 +35,8 @@ export default async function ProfilePage() {
   return (
     <div className="min-h-screen bg-background pb-16">
       {/* Cover Background */}
-      <div className="h-30 w-full bg-gradient-to-r from-primary/20 via-emerald-500/20 to-primary/10 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent"></div>
+      <div className="h-30 w-full bg-linear-to-r from-primary/20 via-emerald-500/20 to-primary/10 relative overflow-hidden">
+        <div className="absolute inset-0 bg-linear-to-t from-background to-transparent"></div>
       </div>
 
       <section className="container mx-auto px-4 -mt-20 relative z-10">
@@ -52,11 +52,11 @@ export default async function ProfilePage() {
         <div className="grid gap-6 md:grid-cols-[320px_minmax(0,1fr)] items-start">
           {/* Profile Details Card */}
           <div className="rounded-3xl border border-border bg-card p-8 shadow-lg flex flex-col items-center text-center relative overflow-hidden">
-            <div className="absolute top-0 w-full h-24 bg-gradient-to-b from-primary/5 to-transparent"></div>
+            <div className="absolute top-0 w-full h-24 bg-linear-to-b from-primary/5 to-transparent"></div>
             
             <div className="relative z-10 mt-2">
               {profile.profileImage ? (
-                <div className="p-1 rounded-full bg-gradient-to-br from-primary to-emerald-400 mb-5 shadow-xl">
+                <div className="p-1 rounded-full bg-linear-to-br from-primary to-emerald-400 mb-5 shadow-xl">
                   <Image
                     src={profile.profileImage}
                     alt={`${profile.firstName} ${profile.lastName}`}
@@ -66,7 +66,7 @@ export default async function ProfilePage() {
                   />
                 </div>
               ) : (
-                <div className="p-1 rounded-full bg-gradient-to-br from-primary to-emerald-400 mb-5 shadow-xl">
+                <div className="p-1 rounded-full bg-linear-to-br from-primary to-emerald-400 mb-5 shadow-xl">
                   <div className="flex h-24 w-24 items-center justify-center rounded-full border-4 border-card bg-card text-4xl font-bold text-primary">
                     {profile.firstName?.[0]}
                   </div>

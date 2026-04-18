@@ -24,15 +24,18 @@ export default function Navbar({ user }: { user: NavbarUser }) {
         </div>
 
         {/* Center: Nav Icons */}
-        <nav className="flex items-center justify-center gap-6">
-          <Link href="/" className="text-muted-foreground transition-colors hover:text-primary" title="Home">
-            <Home className="h-6 w-6" />
+        <nav className="flex items-center justify-center gap-1">
+          <Link href="/" className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-primary/5 hover:text-primary">
+            <Home className="h-4 w-4" />
+            <span>Home</span>
           </Link>
-          <Link href="/" className="text-muted-foreground transition-colors hover:text-primary" title="Bookmarks">
-            <Bookmark className="h-6 w-6" />
+          <Link href="/bookmarks" className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-primary/5 hover:text-primary">
+            <Bookmark className="h-4 w-4" />
+            <span>Bookmarks</span>
           </Link>
-          <Link href="/hadith" className="text-muted-foreground transition-colors hover:text-primary" title="Hadith">
-            <Book className="h-6 w-6" />
+          <Link href="/hadith" className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-primary/5 hover:text-primary">
+            <Book className="h-4 w-4" />
+            <span>Hadith</span>
           </Link>
         </nav>
 
