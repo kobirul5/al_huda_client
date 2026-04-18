@@ -160,7 +160,7 @@ export default function SurahReader({ surah }: SurahReaderProps) {
           <div className="absolute top-0 right-0 w-[50%] h-full bg-primary rounded-full blur-[150px]" />
         </div>
 
-        <div className="relative max-w-4xl mx-auto">
+        <div className="relative container mx-auto px-4">
           <div className="flex flex-col items-center">
             <div className="w-10 h-10 rounded-2xl bg-primary/20 border border-primary/30 flex items-center justify-center text-primary font-bold text-xl mb-6 shadow-glow">
               {surahDetail.id}
@@ -196,7 +196,7 @@ export default function SurahReader({ surah }: SurahReaderProps) {
         </div>
       </section>
 
-      <main className="max-w-330 mx-auto px-4 -mt-10 relative z-10">
+      <main className="container mx-auto px-4 -mt-10 relative z-10">
         <div className="grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)] items-start">
           <aside className="green-scrollbar rounded-3xl border border-border bg-card p-6 shadow-lg lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-scroll [scrollbar-gutter:stable]">
             <div className="mb-6">

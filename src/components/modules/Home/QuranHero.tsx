@@ -20,7 +20,7 @@ const QuranHero: React.FC<QuranHeroProps> = ({ stats }) => {
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-emerald-500 rounded-full blur-[120px]" />
       </div>
 
-      <div className="relative max-w-4xl mx-auto">
+      <div className="relative container mx-auto px-4">
         <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] px-5 py-2 rounded-full mb-8 bg-primary/10 border border-primary/20 text-primary shadow-sm backdrop-blur-sm">
           ✦ The Holy Quran
         </div>
