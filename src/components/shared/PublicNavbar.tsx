@@ -31,7 +31,7 @@ export default function Navbar({ user }: { user: NavbarUser }) {
           <Link href="/" className="text-muted-foreground transition-colors hover:text-primary" title="Bookmarks">
             <Bookmark className="h-6 w-6" />
           </Link>
-          <Link href="/" className="text-muted-foreground transition-colors hover:text-primary" title="Quran">
+          <Link href="/hadith" className="text-muted-foreground transition-colors hover:text-primary" title="Hadith">
             <Book className="h-6 w-6" />
           </Link>
         </nav>
