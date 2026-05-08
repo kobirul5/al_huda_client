@@ -65,7 +65,10 @@ export interface ParaDetail {
   surahs: ParaSurahSegment[];
 }
 
-export interface PageSurahSummary extends SurahListItem {
+export interface PageSurahSummary {
+  id: number;
+  name: string;
+  transliteration: string;
   start_ayah: number;
   end_ayah: number;
 }
@@ -85,7 +88,10 @@ export interface PageSummary {
   surahs: PageSurahSummary[];
 }
 
-export interface PageSurahSegment extends SurahListItem {
+export interface PageSurahSegment {
+  id: number;
+  name: string;
+  transliteration: string;
   start_ayah: number;
   end_ayah: number;
   verses: Verse[];
