@@ -19,7 +19,7 @@ import {
 import { arabicFontFamilyMap } from "@/components/modules/surah/VerseCard";
 import { ReaderSettingsProvider } from "./ReaderSettingsProvider";
 import ReaderSettingsPanel from "./ReaderSettingsPanel";
-import { ParaSummary, ReaderTab, SurahListItem } from "./types";
+import { PageSummary, ParaSummary, ReaderTab, SurahListItem } from "./types";
 
 const railLinks = [
   { href: "/", label: "Home", icon: Home },
@@ -44,10 +44,12 @@ function getActiveTab(pathname: string): ReaderTab {
 function ReaderNavigation({
   surahs,
   paras,
+  pages,
   onNavigate,
 }: {
   surahs: SurahListItem[];
   paras: ParaSummary[];
+  pages: PageSummary[];
   onNavigate?: () => void;
 }) {
   const pathname = usePathname();
@@ -91,6 +93,28 @@ function ReaderNavigation({
       );
     });
   }, [paras, search]);
+
+  const filteredPages = useMemo(() => {
+    const normalizedQuery = search.trim().toLocaleLowerCase();
+
+    if (!normalizedQuery) {
+      return pages;
+    }
+
+    return pages.filter((item) => {
+      const searchableSurahs = item.surahs.flatMap((surah) => [
+        surah.name,
+        surah.transliteration,
+        String(surah.id),
+        `${surah.start_ayah}`,
+        `${surah.end_ayah}`,
+      ]);
+
+      return [`page ${item.id}`, String(item.id), ...searchableSurahs].some((value) =>
+        value.toLocaleLowerCase().includes(normalizedQuery)
+      );
+    });
+  }, [pages, search]);
 
   return (
     <div className="flex h-full min-h-0 flex-col">
@@ -234,11 +258,42 @@ function ReaderNavigation({
             })
           : null}
 
-        {activeTab === "page" ? (
-          <div className="rounded-xl border border-border bg-card px-4 py-5 text-sm text-muted-foreground">
-            Page navigation will be available soon.
-          </div>
-        ) : null}
+        {activeTab === "page"
+          ? filteredPages.map((item) => {
+              const active = pathname === `/page/${item.id}`;
+              const firstSurah = item.surahs[0];
+              const lastSurah = item.surahs[item.surahs.length - 1];
+
+              return (
+                <Link
+                  key={item.id}
+                  href={`/page/${item.id}`}
+                  onClick={onNavigate}
+                  className={`flex items-center gap-3 rounded-xl border p-3 transition ${
+                    active
+                      ? "border-primary/40 bg-primary/10"
+                      : "border-border bg-sidebar hover:border-primary/25 hover:bg-card"
+                  }`}
+                >
+                  <span
+                    className={`grid h-10 w-10 shrink-0 place-items-center rounded-lg ${
+                      active ? "bg-primary text-primary-foreground" : "bg-card text-muted-foreground"
+                    }`}
+                  >
+                    <span className="text-sm font-bold">{item.id}</span>
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-bold text-foreground">Page {item.id}</span>
+                    <span className="block truncate text-xs text-muted-foreground">
+                      {firstSurah?.transliteration}
+                      {lastSurah && lastSurah.id !== firstSurah?.id ? ` - ${lastSurah.transliteration}` : ""}
+                    </span>
+                  </span>
+                  <span className="shrink-0 text-xs font-semibold text-muted-foreground">{item.total_verses} Ayah</span>
+                </Link>
+              );
+            })
+          : null}
       </div>
     </div>
   );
@@ -247,10 +302,12 @@ function ReaderNavigation({
 export default function QuranReaderShell({
   surahs,
   paras,
+  pages,
   children,
 }: {
   surahs: SurahListItem[];
   paras: ParaSummary[];
+  pages: PageSummary[];
   children: React.ReactNode;
 }) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -313,7 +370,7 @@ export default function QuranReaderShell({
 
           <div className="grid min-h-0 flex-1 lg:grid-cols-[334px_minmax(0,1fr)] xl:grid-cols-[334px_minmax(0,1fr)_342px]">
             <aside className="hidden min-h-0 border-r border-border bg-sidebar p-5 lg:block">
-              <ReaderNavigation surahs={surahs} paras={paras} />
+              <ReaderNavigation surahs={surahs} paras={paras} pages={pages} />
             </aside>
 
             <main className="green-scrollbar min-h-0 overflow-y-auto bg-background">{children}</main>
@@ -340,7 +397,7 @@ export default function QuranReaderShell({
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <ReaderNavigation surahs={surahs} paras={paras} onNavigate={() => setMobileNavOpen(false)} />
+              <ReaderNavigation surahs={surahs} paras={paras} pages={pages} onNavigate={() => setMobileNavOpen(false)} />
             </aside>
           </div>
         ) : null}

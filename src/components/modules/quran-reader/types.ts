@@ -65,6 +65,47 @@ export interface ParaDetail {
   surahs: ParaSurahSegment[];
 }
 
+export interface PageSurahSummary extends SurahListItem {
+  start_ayah: number;
+  end_ayah: number;
+}
+
+export interface PageSummary {
+  id: number;
+  start: {
+    surah: number;
+    ayah: number;
+  };
+  end: {
+    surah: number;
+    ayah: number;
+  };
+  total_surahs: number;
+  total_verses: number;
+  surahs: PageSurahSummary[];
+}
+
+export interface PageSurahSegment extends SurahListItem {
+  start_ayah: number;
+  end_ayah: number;
+  verses: Verse[];
+}
+
+export interface PageDetail {
+  id: number;
+  start: {
+    surah: number;
+    ayah: number;
+  };
+  end: {
+    surah: number;
+    ayah: number;
+  };
+  total_surahs: number;
+  total_verses: number;
+  surahs: PageSurahSegment[];
+}
+
 export type ReaderTab = "surah" | "juz" | "page";
 
 export type TranslationLanguage = ReaderSettings["translationLanguage"];
