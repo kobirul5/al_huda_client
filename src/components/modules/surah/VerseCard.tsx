@@ -24,18 +24,36 @@ interface VerseCardProps {
 
 const VerseCard: React.FC<VerseCardProps> = ({ verse, settings }) => {
   const translationLineHeight = Math.round(settings.translationFontSize * 1.8);
-  const translationSpacing = Math.max(Math.round(settings.translationFontSize * 0.75), 14);
-  const transliterationSize = Math.max(settings.translationFontSize - 2, 14);
 
   return (
-    <div className="group p-4 md:p-6 rounded-3xl border border-border bg-card hover:border-primary/30 transition-all duration-300 shadow-sm hover:shadow-xl">
-      <div className="flex justify-between items-start mb-4 gap-4">
-        <div className="w-10 h-10 rounded-full flex items-center justify-center bg-muted text-muted-foreground font-bold text-sm">
-          {verse.id}
+    <article className="grid gap-5 py-8 md:grid-cols-[54px_minmax(0,1fr)] md:py-9">
+      <div className="flex items-start gap-4 md:block">
+        <div className="text-sm font-bold text-primary">{verse.id}</div>
+        <div className="mt-6 hidden space-y-7 text-muted-foreground md:block">
+          <button className="block transition hover:text-foreground" title="Play ayah">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+              <path d="M7 5.5v9l7-4.5-7-4.5Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+            </svg>
+          </button>
+          <button className="block transition hover:text-foreground" title="Read notes">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+              <path d="M5 4.5h8.5A1.5 1.5 0 0 1 15 6v9.2l-2.6-1.4L10 15.2l-2.4-1.4L5 15.2V4.5Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+            </svg>
+          </button>
+          <button className="block transition hover:text-foreground" title="Bookmark">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+              <path d="M6 4.5h8v11l-4-2.4-4 2.4v-11Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+            </svg>
+          </button>
+          <button className="block text-lg leading-none transition hover:text-foreground" title="More">
+            ...
+          </button>
         </div>
+      </div>
 
+      <div className="min-w-0">
         <p
-          className="text-right leading-loose text-foreground flex-1 transition-[font-size] duration-200"
+          className="mb-8 text-right leading-loose text-foreground transition-[font-size] duration-200"
           style={{
             fontFamily: arabicFontFamilyMap[settings.arabicFont],
             fontSize: `${settings.arabicFontSize}px`,
@@ -43,30 +61,23 @@ const VerseCard: React.FC<VerseCardProps> = ({ verse, settings }) => {
         >
           {verse.text}
         </p>
-      </div>
 
-      <div className="space-y-4 pt-6 border-t border-border/50">
         <p
-          className="italic text-primary/70 font-medium mb-0 tracking-wide transition-[font-size,line-height] duration-200"
-          style={{
-            fontSize: `${transliterationSize}px`,
-            lineHeight: `${Math.round(transliterationSize * 1.7)}px`,
-          }}
+          className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground"
         >
-          {verse.transliteration}
+          Saheeh International
         </p>
         <p
-          className="text-muted-foreground font-medium te transition-[font-size,line-height] duration-200"
+          className="max-w-4xl text-foreground/85 transition-[font-size,line-height] duration-200"
           style={{
             fontSize: `${settings.translationFontSize}px`,
             lineHeight: `${translationLineHeight}px`,
-            marginTop: `${translationSpacing}px`,
           }}
         >
           {verse.translation}
         </p>
       </div>
-    </div>
+    </article>
   );
 };
 

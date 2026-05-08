@@ -2,10 +2,26 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import AyahSearchBar from "@/components/modules/surah/AyahSearchBar";
+import {
+  BookOpen,
+  Bookmark,
+  ChevronDown,
+  Compass,
+  Grid2X2,
+  Heart,
+  Home,
+  Leaf,
+  Menu,
+  MoreHorizontal,
+  Play,
+  Search,
+  Settings,
+  Shield,
+  SlidersHorizontal,
+  Type,
+} from "lucide-react";
 import VerseCard, { arabicFontFamilyMap, ReaderSettings } from "@/components/modules/surah/VerseCard";
 import { useBookmark } from "@/hooks/useBookmark";
-import { Bookmark } from "lucide-react";
 
 interface Verse {
   id: number;
@@ -23,16 +39,25 @@ interface SurahData {
   verses: Verse[];
 }
 
+interface SurahListItem {
+  id: number;
+  name: string;
+  transliteration: string;
+  type: string;
+  total_verses: number;
+}
+
 interface SurahReaderProps {
   surah: SurahData;
+  surahs: SurahListItem[];
 }
 
 const STORAGE_KEY = "surah-reader-settings";
 
 const defaultSettings: ReaderSettings = {
   arabicFont: "amiri",
-  arabicFontSize: 36,
-  translationFontSize: 18,
+  arabicFontSize: 30,
+  translationFontSize: 17,
   translationLanguage: "en",
 };
 
@@ -40,7 +65,7 @@ const arabicFontOptions: Array<{
   value: ReaderSettings["arabicFont"];
   label: string;
 }> = [
-  { value: "amiri", label: "Amiri" },
+  { value: "amiri", label: "PDMS Islamic" },
   { value: "notoNaskh", label: "Noto Naskh Arabic" },
 ];
 
@@ -50,6 +75,14 @@ const translationLanguageOptions: Array<{
 }> = [
   { value: "en", label: "English Translation" },
   { value: "bn", label: "Bangla Translation" },
+];
+
+const railLinks = [
+  { href: "/", label: "Home", icon: Home },
+  { href: "/#surahs", label: "Surahs", icon: Grid2X2 },
+  { href: "/prayer-time", label: "Prayer Time", icon: Compass },
+  { href: "/bookmarks", label: "Bookmarks", icon: Bookmark },
+  { href: "/hadith", label: "Hadith", icon: BookOpen },
 ];
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
@@ -68,8 +101,8 @@ const getInitialSettings = (): ReaderSettings => {
     const parsed = JSON.parse(rawSettings) as Partial<ReaderSettings>;
     return {
       arabicFont: parsed.arabicFont === "notoNaskh" ? "notoNaskh" : "amiri",
-      arabicFontSize: clamp(parsed.arabicFontSize ?? defaultSettings.arabicFontSize, 28, 56),
-      translationFontSize: clamp(parsed.translationFontSize ?? defaultSettings.translationFontSize, 14, 28),
+      arabicFontSize: clamp(parsed.arabicFontSize ?? defaultSettings.arabicFontSize, 24, 48),
+      translationFontSize: clamp(parsed.translationFontSize ?? defaultSettings.translationFontSize, 14, 24),
       translationLanguage: parsed.translationLanguage === "bn" ? "bn" : "en",
     };
   } catch {
@@ -87,31 +120,21 @@ function BookmarkButton({ surahDetail }: { surahDetail: SurahData }) {
   });
 
   return (
-    <div className="flex items-center gap-3">
-      <span className="px-5 py-2 rounded-full bg-white/5 border border-white/10 text-white text-sm font-bold">
-        {surahDetail.total_verses} Verses
-      </span>
-      <button
-        onClick={toggleBookmark}
-        title={isBookmarked ? "Remove Bookmark" : "Bookmark this Surah"}
-        className={`flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-bold transition-all duration-200 ${
-          isBookmarked
-            ? "bg-primary border-primary text-white shadow-lg shadow-primary/30"
-            : "bg-white/5 border-white/10 text-white/70 hover:bg-primary/20 hover:border-primary/50 hover:text-white"
-        }`}
-      >
-        <Bookmark className={`h-4 w-4 ${isBookmarked ? "fill-white" : ""}`} />
-        {isBookmarked ? "Bookmarked" : "Bookmark"}
-      </button>
-    </div>
+    <button
+      onClick={toggleBookmark}
+      title={isBookmarked ? "Remove Bookmark" : "Bookmark this Surah"}
+      className="grid h-9 w-9 place-items-center rounded-full bg-card text-muted-foreground transition hover:bg-accent hover:text-primary"
+    >
+      <Bookmark className={`h-4 w-4 ${isBookmarked ? "fill-primary text-primary" : ""}`} />
+    </button>
   );
 }
 
-export default function SurahReader({ surah }: SurahReaderProps) {
+export default function SurahReader({ surah, surahs }: SurahReaderProps) {
   const [settings, setSettings] = useState<ReaderSettings>(getInitialSettings);
   const [surahDetail, setSurahDetail] = useState<SurahData>(surah);
   const [searchQuery, setSearchQuery] = useState("");
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [surahSearch, setSurahSearch] = useState("");
   const [isTranslationLoading, setIsTranslationLoading] = useState(false);
 
   useEffect(() => {
@@ -184,196 +207,335 @@ export default function SurahReader({ surah }: SurahReaderProps) {
     );
   }, [searchQuery, surahDetail.verses]);
 
+  const filteredSurahs = useMemo(() => {
+    const normalizedQuery = surahSearch.trim().toLocaleLowerCase();
+
+    if (!normalizedQuery) {
+      return surahs;
+    }
+
+    return surahs.filter((item) =>
+      [item.name, item.transliteration, String(item.id)]
+        .filter(Boolean)
+        .some((value) => value.toLocaleLowerCase().includes(normalizedQuery))
+    );
+  }, [surahSearch, surahs]);
+
   return (
-    <div className="min-h-screen bg-background pb-20">
-      <section className="relative pt-10 pb-16 px-6 text-center overflow-hidden bg-[#0F172A]">
-        <div className="absolute inset-0 opacity-10 pointer-events-none">
-          <div className="absolute top-0 right-0 w-[50%] h-full bg-primary rounded-full blur-[150px]" />
-        </div>
+    <div className="dark h-screen overflow-hidden bg-background text-foreground">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-16 border-r border-border bg-sidebar px-2 py-3 md:flex md:flex-col md:items-center">
+        <Link href="/" className="mb-16 grid h-10 w-10 place-items-center rounded-xl bg-primary text-primary-foreground">
+          <BookOpen className="h-6 w-6" />
+        </Link>
 
-        <div className="relative container mx-auto px-4">
-          <div className="flex flex-col items-center">
-            <div className="w-10 h-10 rounded-2xl bg-primary/20 border border-primary/30 flex items-center justify-center text-primary font-bold text-xl mb-6 shadow-glow">
-              {surahDetail.id}
-            </div>
-            <h1
-              className="text-6xl md:text-7xl font-bold text-white mb-4 tracking-tight"
-              style={{ fontFamily: arabicFontFamilyMap[settings.arabicFont] }}
-            >
-              {surahDetail.name}
-            </h1>
-            <p className="text-xl text-slate-400 font-medium mb-8">
-              {surahDetail.transliteration} - {surahDetail.type}
-            </p>
+        <div className="flex flex-1 flex-col items-center justify-center gap-5">
+          {railLinks.map((item) => {
+            const Icon = item.icon;
+            const active = item.href === "/#surahs";
 
-            <BookmarkButton surahDetail={surahDetail} />
-
-            <div className="w-full mt-5">
+            return (
               <Link
-                href="/"
-                className="inline-flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-primary transition-colors mb-10 group"
+                key={item.href}
+                href={item.href}
+                title={item.label}
+                className={`grid h-9 w-9 place-items-center rounded-xl transition ${
+                  active ? "bg-accent/40 text-primary" : "text-muted-foreground hover:bg-accent/40 hover:text-foreground"
+                }`}
               >
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="group-hover:-translate-x-1 transition-transform">
-                  <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-                Back to Home
+                <Icon className="h-5 w-5" />
               </Link>
-            </div>
-          </div>
+            );
+          })}
         </div>
-      </section>
+      </aside>
 
-      <main className="container mx-auto px-4 -mt-10 relative z-10">
-        <div className="grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)] items-start">
-          <aside className="green-scrollbar rounded-3xl border border-border bg-card p-6 shadow-lg lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-scroll [scrollbar-gutter:stable]">
-            <div className="mb-6">
-              <p className="text-xs font-bold uppercase tracking-[0.24em] text-primary/80 mb-2">Reader Settings</p>
-              <h2 className="text-2xl font-bold text-foreground">Settings Panel</h2>
-              <p className="text-sm text-muted-foreground mt-2">
-                Adjust the Arabic font and text size to your preference. Your settings will be saved in the browser.
-              </p>
+      <div className="flex h-screen flex-col md:pl-16">
+        <header className="flex h-13.5 shrink-0 items-center justify-between border-b border-border bg-background px-4">
+          <div className="min-w-0">
+            <h1 className="truncate text-xl font-bold leading-5 text-foreground">Al Huda</h1>
+            <p className="mt-1 truncate text-[11px] text-muted-foreground">Read, Study, and Learn The Quran</p>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="hidden items-center gap-2 rounded-full bg-card px-3 py-2 text-sm text-muted-foreground md:flex">
+              <Search className="h-4 w-4 text-primary" />
+              <input
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                placeholder="Search ayah"
+                className="w-32 bg-transparent text-sm outline-none placeholder:text-muted-foreground/70"
+              />
+            </div>
+            <button className="grid h-9 w-9 place-items-center rounded-full bg-card text-primary">
+              <Leaf className="h-4 w-4" />
+            </button>
+            <BookmarkButton surahDetail={surahDetail} />
+            <button className="hidden items-center gap-2 rounded-full bg-primary px-5 py-2 text-sm font-bold text-primary-foreground sm:flex">
+              Support Us
+              <Heart className="h-4 w-4 fill-primary-foreground" />
+            </button>
+          </div>
+        </header>
+
+        <div className="grid min-h-0 flex-1 lg:grid-cols-[334px_minmax(0,1fr)_342px]">
+          <aside className="hidden min-h-0 border-r border-border bg-sidebar p-5 lg:block">
+            <div className="mb-4 grid grid-cols-3 rounded-full bg-card p-1">
+              {["Surah", "Juz", "Page"].map((item, index) => (
+                <button
+                  key={item}
+                  className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                    index === 0 ? "bg-background text-foreground" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {item}
+                </button>
+              ))}
             </div>
 
-            <div className="space-y-6">
-              <AyahSearchBar
-                value={searchQuery}
-                onChange={setSearchQuery}
-                resultCount={filteredVerses.length}
+            <div className="mb-4 flex items-center gap-3 rounded-full border border-border bg-card px-4 py-3 text-muted-foreground">
+              <Search className="h-4 w-4" />
+              <input
+                value={surahSearch}
+                onChange={(event) => setSurahSearch(event.target.value)}
+                placeholder="Search Surah"
+                className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground/70"
               />
+            </div>
 
-              <div className="space-y-3">
-                <label htmlFor="translation-language" className="text-sm font-semibold text-foreground">
-                  Translation Language
-                </label>
-                <select
-                  id="translation-language"
-                  value={settings.translationLanguage}
-                  onChange={(event) =>
-                    setSettings((current) => ({
-                      ...current,
-                      translationLanguage: event.target.value as ReaderSettings["translationLanguage"],
-                    }))
-                  }
-                  className="w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none transition focus:border-primary"
-                >
-                  {translationLanguageOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-               
-              </div>
+            <div className="green-scrollbar h-[calc(100vh-180px)] space-y-2 overflow-y-auto pr-1">
+              {filteredSurahs.map((item) => {
+                const active = item.id === surahDetail.id;
 
-              <div className="space-y-3">
-                <label htmlFor="arabic-font" className="text-sm font-semibold text-foreground">
-                  Arabic Font Selection
-                </label>
-                <select
-                  id="arabic-font"
-                  value={settings.arabicFont}
-                  onChange={(event) =>
-                    setSettings((current) => ({
-                      ...current,
-                      arabicFont: event.target.value as ReaderSettings["arabicFont"],
-                    }))
-                  }
-                  className="w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none transition focus:border-primary"
-                >
-                  {arabicFontOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex items-center justify-between gap-4">
-                  <label htmlFor="arabic-font-size" className="text-sm font-semibold text-foreground">
-                    Arabic Font Size
-                  </label>
-                  <span className="text-sm font-bold text-primary">{settings.arabicFontSize}px</span>
-                </div>
-                <input
-                  id="arabic-font-size"
-                  type="range"
-                  min="28"
-                  max="56"
-                  step="2"
-                  value={settings.arabicFontSize}
-                  onChange={(event) =>
-                    setSettings((current) => ({
-                      ...current,
-                      arabicFontSize: Number(event.target.value),
-                    }))
-                  }
-                  className="w-full accent-primary"
-                />
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex items-center justify-between gap-4">
-                  <label htmlFor="translation-font-size" className="text-sm font-semibold text-foreground">
-                    Translation Font Size
-                  </label>
-                  <span className="text-sm font-bold text-primary">{settings.translationFontSize}px</span>
-                </div>
-                <input
-                  id="translation-font-size"
-                  type="range"
-                  min="14"
-                  max="28"
-                  step="1"
-                  value={settings.translationFontSize}
-                  onChange={(event) =>
-                    setSettings((current) => ({
-                      ...current,
-                      translationFontSize: Number(event.target.value),
-                    }))
-                  }
-                  className="w-full accent-primary"
-                />
-              </div>
+                return (
+                  <Link
+                    key={item.id}
+                    href={`/surah/${item.id}`}
+                    className={`flex items-center gap-3 rounded-xl border p-3 transition ${
+                      active
+                        ? "border-primary/40 bg-primary/10"
+                        : "border-border bg-sidebar hover:border-primary/25 hover:bg-card"
+                    }`}
+                  >
+                    <span
+                      className={`grid h-10 w-10 shrink-0 rotate-45 place-items-center rounded-lg ${
+                        active ? "bg-primary text-primary-foreground" : "bg-card text-muted-foreground"
+                      }`}
+                    >
+                      <span className="-rotate-45 text-sm font-bold">{item.id}</span>
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm font-bold text-foreground">{item.transliteration}</span>
+                      <span className="block truncate text-xs text-muted-foreground">{item.total_verses} Ayah</span>
+                    </span>
+                    <span
+                      className="max-w-18 truncate text-right text-lg text-muted-foreground"
+                      style={{ fontFamily: arabicFontFamilyMap[settings.arabicFont] }}
+                    >
+                      {item.name}
+                    </span>
+                  </Link>
+                );
+              })}
             </div>
           </aside>
 
-          <div className="space-y-6">
-            {filteredVerses.length > 0 ? (
-              filteredVerses.map((verse) => (
-                <VerseCard key={verse.id} verse={verse} settings={settings} />
-              ))
-            ) : (
-              <div className="rounded-3xl border border-border bg-card p-8 text-center shadow-sm">
-                <h3 className="text-xl font-bold text-foreground">No ayahs found</h3>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Try another word from the Arabic text, translation, or transliteration.
-                </p>
+          <main className="green-scrollbar min-h-0 overflow-y-auto bg-background">
+            <section className="mx-auto max-w-5xl px-5 py-8 md:px-8">
+              <div className="mb-10 grid grid-cols-[120px_minmax(0,1fr)_120px] items-center gap-4">
+                <div className="hidden opacity-20 md:block">
+                  <BookOpen className="h-20 w-20 text-muted-foreground" />
+                </div>
+                <div className="col-span-3 text-center md:col-span-1">
+                  <h2 className="text-2xl font-bold text-foreground">{surahDetail.transliteration}</h2>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Ayah-{surahDetail.total_verses}, {surahDetail.type}
+                  </p>
+                </div>
+                <div className="hidden md:block" />
               </div>
-            )}
 
-            <div className="mt-16 flex justify-between items-center bg-card border border-border p-6 rounded-3xl shadow-lg">
-              <Link
-                href={surahDetail.id > 1 ? `/surah/${surahDetail.id - 1}` : "/"}
-                className={`flex items-center gap-3 px-6 py-3 rounded-2xl font-bold transition-all ${
-                  surahDetail.id > 1 ? "bg-muted text-foreground hover:bg-primary hover:text-white" : "opacity-0 pointer-events-none"
-                }`}
-              >
-                Previous Surah
-              </Link>
+              {isTranslationLoading ? (
+                <div className="mb-6 rounded-xl border border-primary/40 bg-primary/10 px-4 py-3 text-sm text-primary">
+                  Loading selected translation...
+                </div>
+              ) : null}
 
-              <Link
-                href={surahDetail.id < 114 ? `/surah/${surahDetail.id + 1}` : "/"}
-                className={`flex items-center gap-3 px-6 py-3 rounded-2xl font-bold transition-all ${
-                  surahDetail.id < 114 ? "bg-primary text-white hover:shadow-glow" : "opacity-0 pointer-events-none"
-                }`}
-              >
-                Next Surah
-              </Link>
+              <div className="divide-y divide-border border-y border-border">
+                {filteredVerses.length > 0 ? (
+                  filteredVerses.map((verse) => (
+                    <VerseCard key={verse.id} verse={verse} settings={settings} />
+                  ))
+                ) : (
+                  <div className="py-16 text-center">
+                    <h3 className="text-xl font-bold text-foreground">No ayahs found</h3>
+                    <p className="mt-2 text-sm text-muted-foreground">Try another word from the Arabic text or translation.</p>
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-8 flex items-center justify-between gap-4">
+                <Link
+                  href={surahDetail.id > 1 ? `/surah/${surahDetail.id - 1}` : "/"}
+                  className={`rounded-full px-5 py-3 text-sm font-bold transition ${
+                    surahDetail.id > 1 ? "bg-card text-foreground hover:bg-accent" : "pointer-events-none opacity-0"
+                  }`}
+                >
+                  Previous Surah
+                </Link>
+                <Link
+                  href={surahDetail.id < 114 ? `/surah/${surahDetail.id + 1}` : "/"}
+                  className={`rounded-full px-5 py-3 text-sm font-bold transition ${
+                    surahDetail.id < 114 ? "bg-primary text-primary-foreground hover:bg-primary/90" : "pointer-events-none opacity-0"
+                  }`}
+                >
+                  Next Surah
+                </Link>
+              </div>
+            </section>
+          </main>
+
+          <aside className="hidden min-h-0 border-l border-border bg-sidebar p-7 xl:block">
+            <div className="mb-7 grid grid-cols-2 rounded-full bg-card p-1">
+              <button className="rounded-full bg-background px-4 py-2 text-sm font-bold text-foreground">Translation</button>
+              <button className="rounded-full px-4 py-2 text-sm font-medium text-muted-foreground">Reading</button>
             </div>
-          </div>
+
+            <div className="space-y-6">
+              <div className="flex items-center justify-between text-foreground">
+                <div className="flex items-center gap-3">
+                  <BookOpen className="h-5 w-5 text-muted-foreground" />
+                  <span className="text-sm font-bold">Reading Settings</span>
+                </div>
+                <ChevronDown className="h-4 w-4" />
+              </div>
+
+              <div className="flex items-center justify-between text-primary">
+                <div className="flex items-center gap-3">
+                  <Type className="h-5 w-5" />
+                  <span className="text-sm font-bold">Font Settings</span>
+                </div>
+                <ChevronDown className="h-4 w-4 rotate-180" />
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <label htmlFor="translation-language" className="text-sm font-bold text-foreground">
+                    Translation
+                  </label>
+                  <select
+                    id="translation-language"
+                    value={settings.translationLanguage}
+                    onChange={(event) =>
+                      setSettings((current) => ({
+                        ...current,
+                        translationLanguage: event.target.value as ReaderSettings["translationLanguage"],
+                      }))
+                    }
+                    className="rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground outline-none"
+                  >
+                    {translationLanguageOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <div className="mb-3 flex items-center justify-between">
+                    <label htmlFor="arabic-font-size" className="text-sm font-bold text-foreground">
+                      Arabic Font Size
+                    </label>
+                    <span className="text-sm font-bold text-primary">{settings.arabicFontSize}</span>
+                  </div>
+                  <input
+                    id="arabic-font-size"
+                    type="range"
+                    min="24"
+                    max="48"
+                    step="1"
+                    value={settings.arabicFontSize}
+                    onChange={(event) =>
+                      setSettings((current) => ({
+                        ...current,
+                        arabicFontSize: Number(event.target.value),
+                      }))
+                    }
+                    className="w-full accent-primary"
+                  />
+                </div>
+
+                <div>
+                  <div className="mb-3 flex items-center justify-between">
+                    <label htmlFor="translation-font-size" className="text-sm font-bold text-foreground">
+                      Translation Font Size
+                    </label>
+                    <span className="text-sm font-bold text-primary">{settings.translationFontSize}</span>
+                  </div>
+                  <input
+                    id="translation-font-size"
+                    type="range"
+                    min="14"
+                    max="24"
+                    step="1"
+                    value={settings.translationFontSize}
+                    onChange={(event) =>
+                      setSettings((current) => ({
+                        ...current,
+                        translationFontSize: Number(event.target.value),
+                      }))
+                    }
+                    className="w-full accent-primary"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="arabic-font" className="mb-3 block text-sm font-bold text-foreground">
+                    Arabic Font Face
+                  </label>
+                  <select
+                    id="arabic-font"
+                    value={settings.arabicFont}
+                    onChange={(event) =>
+                      setSettings((current) => ({
+                        ...current,
+                        arabicFont: event.target.value as ReaderSettings["arabicFont"],
+                      }))
+                    }
+                    className="w-full rounded-lg border border-border bg-card px-4 py-3 text-sm text-foreground outline-none"
+                  >
+                    {arabicFontOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-primary/30 bg-primary/10 p-4">
+                <h3 className="text-base font-bold text-foreground">Help spread the knowledge of Islam</h3>
+                <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                  Your regular support helps us reach our brothers and sisters with the message of Islam.
+                </p>
+                <button className="mt-4 w-full rounded-lg bg-primary px-4 py-3 text-sm font-bold text-primary-foreground">
+                  Support Us
+                </button>
+              </div>
+            </div>
+          </aside>
         </div>
-      </main>
+
+        <div className="fixed bottom-4 right-4 z-50 hidden rounded-lg bg-popover p-2 shadow-2xl md:grid md:grid-cols-5 md:gap-2 xl:right-91.5">
+          {[Shield, Menu, Settings, SlidersHorizontal, MoreHorizontal, Grid2X2, Leaf, Compass, Play, Bookmark].map(
+            (Icon, index) => (
+              <button key={index} className="grid h-8 w-8 place-items-center rounded-md text-foreground hover:bg-accent">
+                <Icon className="h-4 w-4" />
+              </button>
+            )
+          )}
+        </div>
+      </div>
     </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import {
   Bookmark,
   ChevronDown,
@@ -22,9 +23,15 @@ type NavbarUser = {
 } | null;
 
 export default function Navbar({ user }: { user: NavbarUser }) {
+  const pathname = usePathname();
+
+  if (pathname.startsWith("/surah/")) {
+    return null;
+  }
+
   const navLinks = [
     { href: "/", label: "Home" },
-    { href: "/#surahs", label: "Read Quran" },
+    { href: "/surah/1", label: "Read Quran" },
     { href: "/prayer-time", label: "Prayer Time" },
     { href: "/ramadan-2026", label: "Ramadan 2026" },
   ];
@@ -72,7 +79,7 @@ export default function Navbar({ user }: { user: NavbarUser }) {
               <ChevronDown className="h-4 w-4 transition-transform group-hover:rotate-180" />
             </button>
 
-            <div className="invisible absolute left-1/2 top-full grid w-[386px] -translate-x-1/2 grid-cols-2 gap-x-8 gap-y-1 rounded-xl border bg-background p-4 opacity-0 shadow-xl transition-all duration-200 group-hover:visible group-hover:translate-y-2 group-hover:opacity-100">
+            <div className="invisible absolute left-1/2 top-full grid w-96.5 -translate-x-1/2 grid-cols-2 gap-x-8 gap-y-1 rounded-xl border bg-background p-4 opacity-0 shadow-xl transition-all duration-200 group-hover:visible group-hover:translate-y-2 group-hover:opacity-100">
               {otherLinks.map((item) => {
                 const Icon = item.icon;
 
