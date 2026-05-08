@@ -33,7 +33,7 @@ export default async function Home() {
     <div className="min-h-screen bg-background">
       <QuranHero stats={stats} />
       
-      <main className="container mx-auto">
+      <main id="surahs" className="container mx-auto scroll-mt-24">
         <SurahList initialSurahs={surahs} />
       </main>
     </div>
