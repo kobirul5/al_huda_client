@@ -47,10 +47,35 @@ interface SurahListItem {
   total_verses: number;
 }
 
+interface ParaSurahSegment extends SurahListItem {
+  start_ayah: number;
+  end_ayah: number;
+  verses: Verse[];
+}
+
+interface ParaData {
+  id: number;
+  start: {
+    surah: number;
+    ayah: number;
+  };
+  end: {
+    surah: number;
+    ayah: number;
+  };
+  total_surahs: number;
+  total_verses: number;
+  surahs: ParaSurahSegment[];
+}
+
 interface SurahReaderProps {
   surah: SurahData;
   surahs: SurahListItem[];
+  initialParas?: ParaData[];
+  initialParasLanguage?: ReaderSettings["translationLanguage"];
 }
+
+type ReaderTab = "Surah" | "Juz" | "Page";
 
 const STORAGE_KEY = "surah-reader-settings";
 
@@ -130,12 +155,22 @@ function BookmarkButton({ surahDetail }: { surahDetail: SurahData }) {
   );
 }
 
-export default function SurahReader({ surah, surahs }: SurahReaderProps) {
+export default function SurahReader({
+  surah,
+  surahs,
+  initialParas = [],
+  initialParasLanguage = "en",
+}: SurahReaderProps) {
   const [settings, setSettings] = useState<ReaderSettings>(getInitialSettings);
   const [surahDetail, setSurahDetail] = useState<SurahData>(surah);
+  const [selectedPara, setSelectedPara] = useState<ParaData | null>(null);
+  const [paras, setParas] = useState<ParaData[]>(initialParas);
+  const [parasLanguage, setParasLanguage] = useState<ReaderSettings["translationLanguage"]>(initialParasLanguage);
+  const [activeTab, setActiveTab] = useState<ReaderTab>("Surah");
   const [searchQuery, setSearchQuery] = useState("");
   const [surahSearch, setSurahSearch] = useState("");
   const [isTranslationLoading, setIsTranslationLoading] = useState(false);
+  const [isParaLoading, setIsParaLoading] = useState(false);
 
   useEffect(() => {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
@@ -147,7 +182,7 @@ export default function SurahReader({ surah, surahs }: SurahReaderProps) {
 
   useEffect(() => {
     setSearchQuery("");
-  }, [surah.id, settings.translationLanguage]);
+  }, [surah.id, settings.translationLanguage, selectedPara?.id]);
 
   useEffect(() => {
     let isMounted = true;
@@ -193,19 +228,93 @@ export default function SurahReader({ surah, surahs }: SurahReaderProps) {
     };
   }, [settings.translationLanguage, surah]);
 
+  useEffect(() => {
+    if (activeTab !== "Juz") {
+      return;
+    }
+
+    if (paras.length > 0 && parasLanguage === settings.translationLanguage) {
+      setSelectedPara((current) => current ?? paras[0] ?? null);
+      return;
+    }
+
+    let isMounted = true;
+    const controller = new AbortController();
+
+    const loadParas = async () => {
+      setIsParaLoading(true);
+
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
+        const response = await fetch(
+          `${apiUrl}/quran/paras?translation=${settings.translationLanguage}`,
+          {
+            signal: controller.signal,
+            cache: "no-store",
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch paras");
+        }
+
+        const json = await response.json();
+        const loadedParas = json.data as ParaData[];
+
+        if (isMounted) {
+          setParas(loadedParas);
+          setParasLanguage(settings.translationLanguage);
+          setSelectedPara((current) =>
+            current ? loadedParas.find((para) => para.id === current.id) ?? loadedParas[0] ?? null : loadedParas[0] ?? null
+          );
+        }
+      } catch (error) {
+        if ((error as Error).name !== "AbortError" && isMounted) {
+          setParas([]);
+          setSelectedPara(null);
+        }
+      } finally {
+        if (isMounted) {
+          setIsParaLoading(false);
+        }
+      }
+    };
+
+    loadParas();
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
+  }, [activeTab, paras, parasLanguage, settings.translationLanguage]);
+
+  const displayedVerses = useMemo(() => {
+    if (!selectedPara) {
+      return surahDetail.verses;
+    }
+
+    return selectedPara.surahs.flatMap((paraSurah) =>
+      paraSurah.verses.map((verse) => ({
+        ...verse,
+        surahId: paraSurah.id,
+        surahName: paraSurah.transliteration,
+      }))
+    );
+  }, [selectedPara, surahDetail.verses]);
+
   const filteredVerses = useMemo(() => {
     const normalizedQuery = searchQuery.trim().toLocaleLowerCase();
 
     if (!normalizedQuery) {
-      return surahDetail.verses;
+      return displayedVerses;
     }
 
-    return surahDetail.verses.filter((verse) =>
+    return displayedVerses.filter((verse) =>
       [verse.text, verse.translation, verse.transliteration]
         .filter(Boolean)
         .some((value) => value.toLocaleLowerCase().includes(normalizedQuery))
     );
-  }, [searchQuery, surahDetail.verses]);
+  }, [displayedVerses, searchQuery]);
 
   const filteredSurahs = useMemo(() => {
     const normalizedQuery = surahSearch.trim().toLocaleLowerCase();
@@ -220,6 +329,26 @@ export default function SurahReader({ surah, surahs }: SurahReaderProps) {
         .some((value) => value.toLocaleLowerCase().includes(normalizedQuery))
     );
   }, [surahSearch, surahs]);
+
+  const filteredParas = useMemo(() => {
+    const normalizedQuery = surahSearch.trim().toLocaleLowerCase();
+
+    if (!normalizedQuery) {
+      return paras;
+    }
+
+    return paras.filter((para) => {
+      const searchableSurahs = para.surahs.flatMap((item) => [item.name, item.transliteration, String(item.id)]);
+      return [`juz ${para.id}`, `para ${para.id}`, String(para.id), ...searchableSurahs].some((value) =>
+        value.toLocaleLowerCase().includes(normalizedQuery)
+      );
+    });
+  }, [paras, surahSearch]);
+
+  const readerTitle = selectedPara ? `Juz ${selectedPara.id}` : surahDetail.transliteration;
+  const readerSubtitle = selectedPara
+    ? `${selectedPara.total_verses} Ayah, Surah ${selectedPara.start.surah}:${selectedPara.start.ayah} - ${selectedPara.end.surah}:${selectedPara.end.ayah}`
+    : `Ayah-${surahDetail.total_verses}, ${surahDetail.type}`;
 
   return (
     <div className="dark h-screen overflow-hidden bg-background text-foreground">
@@ -269,7 +398,7 @@ export default function SurahReader({ surah, surahs }: SurahReaderProps) {
             <button className="grid h-9 w-9 place-items-center rounded-full bg-card text-primary">
               <Leaf className="h-4 w-4" />
             </button>
-            <BookmarkButton surahDetail={surahDetail} />
+            {selectedPara ? null : <BookmarkButton surahDetail={surahDetail} />}
             <button className="hidden items-center gap-2 rounded-full bg-primary px-5 py-2 text-sm font-bold text-primary-foreground sm:flex">
               Support Us
               <Heart className="h-4 w-4 fill-primary-foreground" />
@@ -280,11 +409,17 @@ export default function SurahReader({ surah, surahs }: SurahReaderProps) {
         <div className="grid min-h-0 flex-1 lg:grid-cols-[334px_minmax(0,1fr)_342px]">
           <aside className="hidden min-h-0 border-r border-border bg-sidebar p-5 lg:block">
             <div className="mb-4 grid grid-cols-3 rounded-full bg-card p-1">
-              {["Surah", "Juz", "Page"].map((item, index) => (
+              {(["Surah", "Juz", "Page"] as ReaderTab[]).map((item) => (
                 <button
                   key={item}
+                  onClick={() => {
+                    setActiveTab(item);
+                    if (item === "Surah") {
+                      setSelectedPara(null);
+                    }
+                  }}
                   className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                    index === 0 ? "bg-background text-foreground" : "text-muted-foreground hover:text-foreground"
+                    activeTab === item ? "bg-background text-foreground" : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   {item}
@@ -297,13 +432,13 @@ export default function SurahReader({ surah, surahs }: SurahReaderProps) {
               <input
                 value={surahSearch}
                 onChange={(event) => setSurahSearch(event.target.value)}
-                placeholder="Search Surah"
+                placeholder={activeTab === "Juz" ? "Search Juz" : "Search Surah"}
                 className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground/70"
               />
             </div>
 
             <div className="green-scrollbar h-[calc(100vh-180px)] space-y-2 overflow-y-auto pr-1">
-              {filteredSurahs.map((item) => {
+              {activeTab === "Surah" ? filteredSurahs.map((item) => {
                 const active = item.id === surahDetail.id;
 
                 return (
@@ -335,7 +470,52 @@ export default function SurahReader({ surah, surahs }: SurahReaderProps) {
                     </span>
                   </Link>
                 );
-              })}
+              }) : null}
+
+              {activeTab === "Juz" && isParaLoading ? (
+                <div className="rounded-xl border border-primary/40 bg-primary/10 px-4 py-3 text-sm text-primary">
+                  Loading juz list...
+                </div>
+              ) : null}
+
+              {activeTab === "Juz" && !isParaLoading ? filteredParas.map((para) => {
+                const active = para.id === selectedPara?.id;
+                const firstSurah = para.surahs[0];
+                const lastSurah = para.surahs[para.surahs.length - 1];
+
+                return (
+                  <button
+                    key={para.id}
+                    onClick={() => setSelectedPara(para)}
+                    className={`flex w-full items-center gap-3 rounded-xl border p-3 text-left transition ${
+                      active
+                        ? "border-primary/40 bg-primary/10"
+                        : "border-border bg-sidebar hover:border-primary/25 hover:bg-card"
+                    }`}
+                  >
+                    <span
+                      className={`grid h-10 w-10 shrink-0 rotate-45 place-items-center rounded-lg ${
+                        active ? "bg-primary text-primary-foreground" : "bg-card text-muted-foreground"
+                      }`}
+                    >
+                      <span className="-rotate-45 text-sm font-bold">{para.id}</span>
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm font-bold text-foreground">Juz {para.id}</span>
+                      <span className="block truncate text-xs text-muted-foreground">
+                        {firstSurah?.transliteration} - {lastSurah?.transliteration}
+                      </span>
+                    </span>
+                    <span className="shrink-0 text-xs font-semibold text-muted-foreground">{para.total_verses} Ayah</span>
+                  </button>
+                );
+              }) : null}
+
+              {activeTab === "Page" ? (
+                <div className="rounded-xl border border-border bg-card px-4 py-5 text-sm text-muted-foreground">
+                  Page list will be available soon.
+                </div>
+              ) : null}
             </div>
           </aside>
 
@@ -346,24 +526,22 @@ export default function SurahReader({ surah, surahs }: SurahReaderProps) {
                   <BookOpen className="h-20 w-20 text-muted-foreground" />
                 </div>
                 <div className="col-span-3 text-center md:col-span-1">
-                  <h2 className="text-2xl font-bold text-foreground">{surahDetail.transliteration}</h2>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    Ayah-{surahDetail.total_verses}, {surahDetail.type}
-                  </p>
+                  <h2 className="text-2xl font-bold text-foreground">{readerTitle}</h2>
+                  <p className="mt-2 text-sm text-muted-foreground">{readerSubtitle}</p>
                 </div>
                 <div className="hidden md:block" />
               </div>
 
-              {isTranslationLoading ? (
+              {isTranslationLoading || isParaLoading ? (
                 <div className="mb-6 rounded-xl border border-primary/40 bg-primary/10 px-4 py-3 text-sm text-primary">
-                  Loading selected translation...
+                  Loading selected {selectedPara ? "juz" : "translation"}...
                 </div>
               ) : null}
 
               <div className="divide-y divide-border border-y border-border">
                 {filteredVerses.length > 0 ? (
                   filteredVerses.map((verse) => (
-                    <VerseCard key={verse.id} verse={verse} settings={settings} />
+                    <VerseCard key={`${"surahId" in verse ? verse.surahId : surahDetail.id}-${verse.id}`} verse={verse} settings={settings} />
                   ))
                 ) : (
                   <div className="py-16 text-center">
@@ -373,24 +551,45 @@ export default function SurahReader({ surah, surahs }: SurahReaderProps) {
                 )}
               </div>
 
-              <div className="mt-8 flex items-center justify-between gap-4">
-                <Link
-                  href={surahDetail.id > 1 ? `/surah/${surahDetail.id - 1}` : "/"}
-                  className={`rounded-full px-5 py-3 text-sm font-bold transition ${
-                    surahDetail.id > 1 ? "bg-card text-foreground hover:bg-accent" : "pointer-events-none opacity-0"
-                  }`}
-                >
-                  Previous Surah
-                </Link>
-                <Link
-                  href={surahDetail.id < 114 ? `/surah/${surahDetail.id + 1}` : "/"}
-                  className={`rounded-full px-5 py-3 text-sm font-bold transition ${
-                    surahDetail.id < 114 ? "bg-primary text-primary-foreground hover:bg-primary/90" : "pointer-events-none opacity-0"
-                  }`}
-                >
-                  Next Surah
-                </Link>
-              </div>
+              {selectedPara ? (
+                <div className="mt-8 flex items-center justify-between gap-4">
+                  <button
+                    onClick={() => setSelectedPara(paras.find((para) => para.id === selectedPara.id - 1) ?? selectedPara)}
+                    className={`rounded-full px-5 py-3 text-sm font-bold transition ${
+                      selectedPara.id > 1 ? "bg-card text-foreground hover:bg-accent" : "pointer-events-none opacity-0"
+                    }`}
+                  >
+                    Previous Juz
+                  </button>
+                  <button
+                    onClick={() => setSelectedPara(paras.find((para) => para.id === selectedPara.id + 1) ?? selectedPara)}
+                    className={`rounded-full px-5 py-3 text-sm font-bold transition ${
+                      selectedPara.id < 30 ? "bg-primary text-primary-foreground hover:bg-primary/90" : "pointer-events-none opacity-0"
+                    }`}
+                  >
+                    Next Juz
+                  </button>
+                </div>
+              ) : (
+                <div className="mt-8 flex items-center justify-between gap-4">
+                  <Link
+                    href={surahDetail.id > 1 ? `/surah/${surahDetail.id - 1}` : "/"}
+                    className={`rounded-full px-5 py-3 text-sm font-bold transition ${
+                      surahDetail.id > 1 ? "bg-card text-foreground hover:bg-accent" : "pointer-events-none opacity-0"
+                    }`}
+                  >
+                    Previous Surah
+                  </Link>
+                  <Link
+                    href={surahDetail.id < 114 ? `/surah/${surahDetail.id + 1}` : "/"}
+                    className={`rounded-full px-5 py-3 text-sm font-bold transition ${
+                      surahDetail.id < 114 ? "bg-primary text-primary-foreground hover:bg-primary/90" : "pointer-events-none opacity-0"
+                    }`}
+                  >
+                    Next Surah
+                  </Link>
+                </div>
+              )}
             </section>
           </main>
 

@@ -1,4 +1,5 @@
 import React from "react";
+import { Bookmark, MoreHorizontal, Play, StickyNote } from "lucide-react";
 
 export interface ReaderSettings {
   arabicFont: "amiri" | "notoNaskh";
@@ -29,24 +30,18 @@ const VerseCard: React.FC<VerseCardProps> = ({ verse, settings }) => {
     <article className="grid gap-5 py-8 md:grid-cols-[54px_minmax(0,1fr)] md:py-9">
       <div className="flex items-start gap-4 md:block">
         <div className="text-sm font-bold text-primary">{verse.id}</div>
-        <div className="mt-6 hidden space-y-7 text-muted-foreground md:block">
-          <button className="block transition hover:text-foreground" title="Play ayah">
-            <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
-              <path d="M7 5.5v9l7-4.5-7-4.5Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-            </svg>
+        <div className="mt-6 hidden space-y-5 text-muted-foreground md:block">
+          <button className="grid h-8 w-8 place-items-center rounded-md transition hover:bg-accent hover:text-foreground" title="Play ayah">
+            <Play className="h-5 w-5" />
           </button>
-          <button className="block transition hover:text-foreground" title="Read notes">
-            <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
-              <path d="M5 4.5h8.5A1.5 1.5 0 0 1 15 6v9.2l-2.6-1.4L10 15.2l-2.4-1.4L5 15.2V4.5Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
-            </svg>
+          <button className="grid h-8 w-8 place-items-center rounded-md transition hover:bg-accent hover:text-foreground" title="Read notes">
+            <StickyNote className="h-5 w-5" />
           </button>
-          <button className="block transition hover:text-foreground" title="Bookmark">
-            <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
-              <path d="M6 4.5h8v11l-4-2.4-4 2.4v-11Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
-            </svg>
+          <button className="grid h-8 w-8 place-items-center rounded-md transition hover:bg-accent hover:text-foreground" title="Bookmark">
+            <Bookmark className="h-5 w-5" />
           </button>
-          <button className="block text-lg leading-none transition hover:text-foreground" title="More">
-            ...
+          <button className="grid h-8 w-8 place-items-center rounded-md transition hover:bg-accent hover:text-foreground" title="More">
+            <MoreHorizontal className="h-5 w-5" />
           </button>
         </div>
       </div>
