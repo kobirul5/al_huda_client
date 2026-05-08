@@ -1,4 +1,4 @@
-import { ParaDetail, SurahDetail, SurahListItem, TranslationLanguage } from "./types";
+import { ParaDetail, ParaSummary, SurahDetail, SurahListItem, TranslationLanguage } from "./types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
 
@@ -29,6 +29,19 @@ export async function getSurahDetail(
 
   const result = await response.json();
   return result.data;
+}
+
+export async function getParas(): Promise<ParaSummary[]> {
+  const response = await fetch(`${API_URL}/quran/paras`, {
+    cache: "force-cache",
+  });
+
+  if (!response.ok) {
+    return [];
+  }
+
+  const result = await response.json();
+  return result.data || [];
 }
 
 export async function getParaDetail(

@@ -7,6 +7,9 @@ export interface Verse {
   transliteration: string;
   surahId?: number;
   surahName?: string;
+  surahArabicName?: string;
+  showSurahHeading?: boolean;
+  headingAnchorId?: string;
 }
 
 export interface SurahListItem {
@@ -25,6 +28,26 @@ export interface ParaSurahSegment extends SurahListItem {
   start_ayah: number;
   end_ayah: number;
   verses: Verse[];
+}
+
+export interface ParaSurahSummary extends SurahListItem {
+  start_ayah: number;
+  end_ayah: number;
+}
+
+export interface ParaSummary {
+  id: number;
+  start: {
+    surah: number;
+    ayah: number;
+  };
+  end: {
+    surah: number;
+    ayah: number;
+  };
+  total_surahs: number;
+  total_verses: number;
+  surahs: ParaSurahSummary[];
 }
 
 export interface ParaDetail {

@@ -184,6 +184,7 @@
   .green-scrollbar {
     scrollbar-color: var(--primary) var(--muted);
     scrollbar-width: thin;
+    scroll-behavior: smooth;
   }
 
   .green-scrollbar::-webkit-scrollbar {

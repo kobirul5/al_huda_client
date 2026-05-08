@@ -16,6 +16,9 @@ export const arabicFontFamilyMap: Record<ReaderSettings["arabicFont"], string> =
 interface VerseCardProps {
   verse: {
     id: number;
+    surahId?: number;
+    surahName?: string;
+    headingAnchorId?: string;
     text: string;
     translation: string;
     transliteration: string;
@@ -25,9 +28,14 @@ interface VerseCardProps {
 
 const VerseCard: React.FC<VerseCardProps> = ({ verse, settings }) => {
   const translationLineHeight = Math.round(settings.translationFontSize * 1.8);
+  const verseAnchorId = verse.headingAnchorId
+    ? undefined
+    : verse.surahId
+      ? `surah-${verse.surahId}-ayah-${verse.id}`
+      : undefined;
 
   return (
-    <article className="grid gap-5 py-8 md:grid-cols-[54px_minmax(0,1fr)] md:py-9">
+    <article id={verseAnchorId} className="scroll-mt-8 grid gap-5 py-8 md:grid-cols-[54px_minmax(0,1fr)] md:py-9">
       <div className="flex items-start gap-4 md:block">
         <div className="text-sm font-bold text-primary">{verse.id}</div>
         <div className="mt-6 hidden space-y-5 text-muted-foreground md:block">

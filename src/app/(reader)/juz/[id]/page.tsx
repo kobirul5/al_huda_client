@@ -13,10 +13,13 @@ export default async function JuzPage({ params }: { params: Promise<{ id: string
   const { id } = await params;
   const juz = await getParaDetail(id);
   const verses = juz.surahs.flatMap((surah) =>
-    surah.verses.map((verse) => ({
+    surah.verses.map((verse, verseIndex) => ({
       ...verse,
       surahId: surah.id,
       surahName: surah.transliteration,
+      surahArabicName: surah.name,
+      showSurahHeading: verseIndex === 0,
+      headingAnchorId: verseIndex === 0 ? `surah-${surah.id}-ayah-${surah.start_ayah}` : undefined,
     }))
   );
 

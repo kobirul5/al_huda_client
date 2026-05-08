@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { BookOpen } from "lucide-react";
-import VerseCard from "@/components/modules/surah/VerseCard";
+import VerseCard, { arabicFontFamilyMap } from "@/components/modules/surah/VerseCard";
 import { useReaderSettings } from "./ReaderSettingsProvider";
 import { Verse } from "./types";
 
@@ -47,11 +47,23 @@ export default function ReaderContent({
       <div className="divide-y divide-border border-y border-border">
         {verses.length > 0 ? (
           verses.map((verse) => (
-            <VerseCard
-              key={`${verse.surahId ?? "surah"}-${verse.id}`}
-              verse={verse}
-              settings={settings}
-            />
+            <div key={`${verse.surahId ?? "surah"}-${verse.id}`}>
+              {verse.showSurahHeading ? (
+                <div id={verse.headingAnchorId} className="scroll-mt-8 py-8 text-center">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-primary">Surah</p>
+                  <h3 className="mt-2 text-xl font-bold text-foreground">{verse.surahName}</h3>
+                  {verse.surahArabicName ? (
+                    <p
+                      className="mt-3 text-3xl leading-relaxed text-foreground"
+                      style={{ fontFamily: arabicFontFamilyMap[settings.arabicFont] }}
+                    >
+                      {verse.surahArabicName}
+                    </p>
+                  ) : null}
+                </div>
+              ) : null}
+              <VerseCard verse={verse} settings={settings} />
+            </div>
           ))
         ) : (
           <div className="py-16 text-center">

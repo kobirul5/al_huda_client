@@ -1,8 +1,12 @@
 import QuranReaderShell from "@/components/modules/quran-reader/QuranReaderShell";
-import { getSurahs } from "@/components/modules/quran-reader/reader-api";
+import { getParas, getSurahs } from "@/components/modules/quran-reader/reader-api";
 
 export default async function ReaderLayout({ children }: { children: React.ReactNode }) {
-  const surahs = await getSurahs();
+  const [surahs, paras] = await Promise.all([getSurahs(), getParas()]);
 
-  return <QuranReaderShell surahs={surahs}>{children}</QuranReaderShell>;
+  return (
+    <QuranReaderShell surahs={surahs} paras={paras}>
+      {children}
+    </QuranReaderShell>
+  );
 }

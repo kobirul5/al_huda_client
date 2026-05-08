@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   BookOpen,
   Bookmark,
+  ChevronDown,
   Compass,
   Grid2X2,
   Heart,
@@ -18,7 +19,7 @@ import {
 import { arabicFontFamilyMap } from "@/components/modules/surah/VerseCard";
 import { ReaderSettingsProvider } from "./ReaderSettingsProvider";
 import ReaderSettingsPanel from "./ReaderSettingsPanel";
-import { ReaderTab, SurahListItem } from "./types";
+import { ParaSummary, ReaderTab, SurahListItem } from "./types";
 
 const railLinks = [
   { href: "/", label: "Home", icon: Home },
@@ -27,11 +28,6 @@ const railLinks = [
   { href: "/bookmarks", label: "Bookmarks", icon: Bookmark },
   { href: "/hadith", label: "Hadith", icon: BookOpen },
 ];
-
-const juzItems = Array.from({ length: 30 }, (_, index) => ({
-  id: index + 1,
-  label: `Juz ${index + 1}`,
-}));
 
 function getActiveTab(pathname: string): ReaderTab {
   if (pathname.startsWith("/juz")) {
@@ -47,13 +43,17 @@ function getActiveTab(pathname: string): ReaderTab {
 
 function ReaderNavigation({
   surahs,
+  paras,
   onNavigate,
 }: {
   surahs: SurahListItem[];
+  paras: ParaSummary[];
   onNavigate?: () => void;
 }) {
   const pathname = usePathname();
   const activeTab = getActiveTab(pathname);
+  const activeJuzId = activeTab === "juz" ? Number(pathname.split("/")[2]) : null;
+  const [expandedJuzId, setExpandedJuzId] = useState<number | null>(activeJuzId);
   const [search, setSearch] = useState("");
 
   const filteredSurahs = useMemo(() => {
@@ -74,15 +74,23 @@ function ReaderNavigation({
     const normalizedQuery = search.trim().toLocaleLowerCase();
 
     if (!normalizedQuery) {
-      return juzItems;
+      return paras;
     }
 
-    return juzItems.filter((item) =>
-      [item.label, String(item.id), `para ${item.id}`].some((value) =>
+    return paras.filter((item) => {
+      const searchableSurahs = item.surahs.flatMap((surah) => [
+        surah.name,
+        surah.transliteration,
+        String(surah.id),
+        `${surah.start_ayah}`,
+        `${surah.end_ayah}`,
+      ]);
+
+      return [`juz ${item.id}`, `para ${item.id}`, String(item.id), ...searchableSurahs].some((value) =>
         value.toLocaleLowerCase().includes(normalizedQuery)
-      )
-    );
-  }, [search]);
+      );
+    });
+  }, [paras, search]);
 
   return (
     <div className="flex h-full min-h-0 flex-col">
@@ -152,27 +160,76 @@ function ReaderNavigation({
         {activeTab === "juz"
           ? filteredJuz.map((item) => {
               const active = pathname === `/juz/${item.id}`;
+              const expanded = expandedJuzId === item.id || active;
+              const firstSurah = item.surahs[0];
+              const lastSurah = item.surahs[item.surahs.length - 1];
 
               return (
-                <Link
+                <div
                   key={item.id}
-                  href={`/juz/${item.id}`}
-                  onClick={onNavigate}
-                  className={`flex items-center gap-3 rounded-xl border p-3 transition ${
+                  className={`rounded-xl border transition ${
                     active
                       ? "border-primary/40 bg-primary/10"
                       : "border-border bg-sidebar hover:border-primary/25 hover:bg-card"
                   }`}
                 >
-                  <span
-                    className={`grid h-10 w-10 shrink-0 rotate-45 place-items-center rounded-lg ${
-                      active ? "bg-primary text-primary-foreground" : "bg-card text-muted-foreground"
-                    }`}
-                  >
-                    <span className="-rotate-45 text-sm font-bold">{item.id}</span>
-                  </span>
-                  <span className="block truncate text-sm font-bold text-foreground">{item.label}</span>
-                </Link>
+                  <div className="flex items-center gap-3 p-3">
+                    <Link
+                      href={`/juz/${item.id}`}
+                      onClick={onNavigate}
+                      className="flex min-w-0 flex-1 items-center gap-3"
+                    >
+                      <span
+                        className={`grid h-10 w-10 shrink-0 rotate-45 place-items-center rounded-lg ${
+                          active ? "bg-primary text-primary-foreground" : "bg-card text-muted-foreground"
+                        }`}
+                      >
+                        <span className="-rotate-45 text-sm font-bold">{item.id}</span>
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-sm font-bold text-foreground">Juz {item.id}</span>
+                        <span className="block truncate text-xs text-muted-foreground">
+                          {firstSurah?.transliteration} - {lastSurah?.transliteration}
+                        </span>
+                      </span>
+                    </Link>
+                    <button
+                      onClick={() => setExpandedJuzId(expanded ? null : item.id)}
+                      className="grid h-8 w-8 shrink-0 place-items-center rounded-md text-muted-foreground transition hover:bg-accent hover:text-foreground"
+                      title={expanded ? "Hide surahs" : "Show surahs"}
+                    >
+                      <ChevronDown className={`h-4 w-4 transition ${expanded ? "rotate-180" : ""}`} />
+                    </button>
+                  </div>
+
+                  {expanded ? (
+                    <div className="space-y-1 border-t border-border px-3 py-2">
+                      {item.surahs.map((surah) => (
+                        <Link
+                          key={`${item.id}-${surah.id}-${surah.start_ayah}`}
+                          href={`/juz/${item.id}#surah-${surah.id}-ayah-${surah.start_ayah}`}
+                          onClick={onNavigate}
+                          className="flex items-center justify-between gap-3 rounded-lg px-2 py-2 text-xs transition hover:bg-accent"
+                        >
+                          <span className="min-w-0">
+                            <span className="block truncate font-semibold text-foreground">
+                              {surah.id}. {surah.transliteration}
+                            </span>
+                            <span className="block truncate text-muted-foreground">
+                              Ayah {surah.start_ayah}-{surah.end_ayah}
+                            </span>
+                          </span>
+                          <span
+                            className="max-w-16 shrink-0 truncate text-right text-base text-muted-foreground"
+                            style={{ fontFamily: arabicFontFamilyMap.amiri }}
+                          >
+                            {surah.name}
+                          </span>
+                        </Link>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
               );
             })
           : null}
@@ -189,9 +246,11 @@ function ReaderNavigation({
 
 export default function QuranReaderShell({
   surahs,
+  paras,
   children,
 }: {
   surahs: SurahListItem[];
+  paras: ParaSummary[];
   children: React.ReactNode;
 }) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -254,7 +313,7 @@ export default function QuranReaderShell({
 
           <div className="grid min-h-0 flex-1 lg:grid-cols-[334px_minmax(0,1fr)] xl:grid-cols-[334px_minmax(0,1fr)_342px]">
             <aside className="hidden min-h-0 border-r border-border bg-sidebar p-5 lg:block">
-              <ReaderNavigation surahs={surahs} />
+              <ReaderNavigation surahs={surahs} paras={paras} />
             </aside>
 
             <main className="green-scrollbar min-h-0 overflow-y-auto bg-background">{children}</main>
@@ -281,7 +340,7 @@ export default function QuranReaderShell({
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <ReaderNavigation surahs={surahs} onNavigate={() => setMobileNavOpen(false)} />
+              <ReaderNavigation surahs={surahs} paras={paras} onNavigate={() => setMobileNavOpen(false)} />
             </aside>
           </div>
         ) : null}
