@@ -1,0 +1,63 @@
+import React from "react";
+import { Moon } from "lucide-react";
+import PrayerRow from "../components/PrayerRow";
+import { prayerNames, formatTime, getEndTimeForPrayer } from "../utils/prayerUtils";
+import { Sunrise, Sun, CloudSun, Sunset, Clock } from "lucide-react";
+
+interface DailyPrayersTabProps {
+  prayerData: any;
+  location: { city: string; country: string };
+  activePrayerName: string;
+}
+
+const getIconForPrayer = (name: string) => {
+  switch (name) {
+    case 'Fajr': return <Sunrise className="w-5 h-5" />;
+    case 'Dhuhr': return <Sun className="w-5 h-5" />;
+    case 'Asr': return <CloudSun className="w-5 h-5" />;
+    case 'Maghrib': return <Sunset className="w-5 h-5" />;
+    case 'Isha': return <Moon className="w-5 h-5" />;
+    default: return <Clock className="w-5 h-5" />;
+  }
+};
+
+const DailyPrayersTab: React.FC<DailyPrayersTabProps> = ({ prayerData, location, activePrayerName }) => {
+  return (
+    <div className="p-10">
+      <div className="flex justify-between items-center mb-12">
+        <div>
+          <div className="bg-primary/20 p-4 rounded-2xl w-fit mb-4">
+            <Moon className="w-10 h-10 text-primary" />
+          </div>
+          <p className="text-slate-400 text-sm font-medium mb-1">Today Namaz Times in</p>
+          <h3 className="text-4xl font-bold">{location.city}, {location.country}</h3>
+        </div>
+        <div className="text-right">
+          <div className="text-6xl font-bold mb-1">{prayerData.date.hijri.day}</div>
+          <div className="text-slate-400 font-medium">{prayerData.date.hijri.month.en}</div>
+          <div className="text-slate-500 text-sm">{prayerData.date.hijri.year} AH</div>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <div className="grid grid-cols-12 px-6 py-2 text-slate-500 text-xs font-bold uppercase tracking-widest">
+          <div className="col-span-6">Prayer</div>
+          <div className="col-span-3 text-right">Start</div>
+          <div className="col-span-3 text-right">End</div>
+        </div>
+        {prayerNames.map((name) => (
+          <PrayerRow
+            key={name}
+            name={name}
+            time={formatTime(prayerData.timings[name])}
+            endTime={getEndTimeForPrayer(name, prayerData.timings)}
+            isActive={activePrayerName === name}
+            icon={getIconForPrayer(name)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default DailyPrayersTab;

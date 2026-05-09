@@ -5,7 +5,7 @@ async function getPrayerTimeData(city: string = "Dhaka", country: string = "Bang
 
   try {
     const res = await fetch(`${apiUrl}/prayer-time?city=${city}&country=${country}`, {
-      next: { revalidate: 3600 }, // Cache for 1 hour
+      cache: "no-store", 
     });
 
     if (!res.ok) {
