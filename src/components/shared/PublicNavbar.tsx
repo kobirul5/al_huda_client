@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import {
   Bookmark,
@@ -11,9 +12,12 @@ import {
   Info,
   MessageCircle,
   MessageSquare,
+  Moon,
   Shield,
+  Sun,
   UserCircle,
 } from "lucide-react";
+import { useTheme } from "next-themes";
 
 import { Button } from "@/components/ui/button";
 
@@ -24,6 +28,12 @@ type NavbarUser = {
 
 export default function Navbar({ user }: { user: NavbarUser }) {
   const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
+  const { theme, setTheme } = useTheme();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   if (pathname.startsWith("/surah/")) {
     return null;
@@ -48,7 +58,7 @@ export default function Navbar({ user }: { user: NavbarUser }) {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur">
       <div className="container mx-auto flex min-h-16 items-center justify-between px-4 py-3">
         {/* Left: Logo */}
         <div className="flex flex-1 items-center justify-start">
@@ -98,8 +108,25 @@ export default function Navbar({ user }: { user: NavbarUser }) {
           </div>
         </nav>
 
-        {/* Right: Auth / Profile */}
+        {/* Right: Auth / Profile / Theme */}
         <div className="flex flex-1 items-center justify-end gap-3 sm:gap-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="rounded-full"
+            title="Toggle theme"
+          >
+            {mounted ? (
+              <>
+                <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+              </>
+            ) : (
+              <Sun className="h-5 w-5 animate-pulse" />
+            )}
+            <span className="sr-only">Toggle theme</span>
+          </Button>
           {!user ? (
             <>
               <Button variant="ghost" asChild>

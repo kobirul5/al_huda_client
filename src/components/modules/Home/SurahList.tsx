@@ -49,8 +49,8 @@ const SurahList: React.FC<SurahListProps> = ({ initialSurahs }) => {
               onClick={() => setFilter(f)}
               className={`px-6 py-2.5 rounded-xl text-sm font-bold capitalize transition-all duration-300 ${
                 filter === f
-                  ? "bg-white text-primary shadow-lg scale-105"
-                  : "text-muted-foreground hover:text-foreground hover:bg-white/40"
+                  ? "bg-card text-primary shadow-lg scale-105"
+                  : "text-muted-foreground hover:text-foreground hover:bg-card/40"
               }`}
             >
               {f}

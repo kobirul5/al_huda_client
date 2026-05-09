@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -13,10 +13,13 @@ import {
   Home,
   Leaf,
   Menu,
+  Moon,
   Search,
   Settings,
+  Sun,
   X,
 } from "lucide-react";
+import { useTheme } from "next-themes";
 import { arabicFontFamilyMap } from "@/components/modules/surah/VerseCard";
 import { ReaderSettingsProvider } from "./ReaderSettingsProvider";
 import ReaderSettingsPanel from "./ReaderSettingsPanel";
@@ -313,10 +316,16 @@ export default function QuranReaderShell({
 }) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const { theme, setTheme } = useTheme();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <ReaderSettingsProvider>
-      <div className="dark h-dvh overflow-hidden bg-background text-foreground">
+      <div className="h-dvh overflow-hidden bg-background text-foreground">
         <aside className="fixed inset-y-0 left-0 z-40 hidden w-16 border-r border-border bg-sidebar px-2 py-3 md:flex md:flex-col md:items-center">
           <Link href="/" className="mb-16 grid h-10 w-10 place-items-center rounded-xl bg-primary text-primary-foreground">
             <BookOpen className="h-6 w-6" />
@@ -360,6 +369,21 @@ export default function QuranReaderShell({
             </div>
 
             <div className="flex items-center gap-3">
+              <button
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                className="grid h-9 w-9 place-items-center rounded-full bg-card text-foreground"
+                title="Toggle theme"
+              >
+                {mounted ? (
+                  <>
+                    <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                    <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                  </>
+                ) : (
+                  <Sun className="h-5 w-5 animate-pulse" />
+                )}
+                <span className="sr-only">Toggle theme</span>
+              </button>
               <button
                 onClick={() => setSettingsOpen(true)}
                 className="grid h-9 w-9 place-items-center rounded-full bg-card text-foreground"

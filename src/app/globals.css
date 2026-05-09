@@ -4,82 +4,38 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  /* =====================
-     BASE COLORS (SOFT GREEN)
-  ===================== */
-  --color-background: oklch(98.6% 0.012 145);
-  --color-foreground: oklch(24% 0.03 155);
-
-  --color-card: oklch(100% 0 0);
-  --color-card-foreground: oklch(24% 0.03 155);
-
-  --color-popover: oklch(100% 0 0);
-  --color-popover-foreground: oklch(24% 0.03 155);
-
-  /* =====================
-     PRIMARY (EMERALD GREEN)
-  ===================== */
-  --color-primary: oklch(58% 0.14 150);
-  --color-primary-foreground: oklch(98.8% 0.01 145);
-
-  /* =====================
-     SECONDARY (MINT TINT)
-  ===================== */
-  --color-secondary: oklch(94% 0.03 150);
-  --color-secondary-foreground: oklch(30% 0.05 155);
-
-  /* =====================
-     ACCENT (SAGE GREEN)
-  ===================== */
-  --color-accent: oklch(88% 0.05 155);
-  --color-accent-foreground: oklch(28% 0.05 155);
-
-  /* =====================
-     MUTED (PALE LEAF)
-  ===================== */
-  --color-muted: oklch(95.5% 0.02 150);
-  --color-muted-foreground: oklch(46% 0.03 155);
-
-  /* =====================
-     DESTRUCTIVE
-  ===================== */
-  --color-destructive: oklch(58% 0.18 27);
-  --color-destructive-foreground: oklch(98.5% 0.01 27);
-
-  /* =====================
-     BORDERS / INPUTS / RINGS
-  ===================== */
-  --color-border: oklch(90% 0.025 150);
-  --color-input: oklch(92% 0.025 150);
-  --color-ring: oklch(58% 0.14 150);
-
-  /* =====================
-     SIDEBAR
-  ===================== */
-  --color-sidebar: oklch(97.5% 0.018 150);
-  --color-sidebar-foreground: oklch(26% 0.04 155);
-
-  --color-sidebar-primary: oklch(58% 0.14 150);
-  --color-sidebar-primary-foreground: oklch(98.8% 0.01 145);
-
-  --color-sidebar-accent: oklch(92% 0.03 150);
-  --color-sidebar-accent-foreground: oklch(28% 0.05 155);
-
-  --color-sidebar-border: oklch(88.5% 0.025 150);
-  --color-sidebar-ring: oklch(58% 0.14 150);
-
-  /* =====================
-     CHART COLORS
-  ===================== */
-  --color-chart-1: oklch(58% 0.14 150);
-  --color-chart-2: oklch(66% 0.11 145);
-  --color-chart-3: oklch(73% 0.09 140);
-  --color-chart-4: oklch(80% 0.07 135);
-  --color-chart-5: oklch(87% 0.05 130);
-
-  /* =====================
-     RADIUS
-  ===================== */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
