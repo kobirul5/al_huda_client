@@ -6,9 +6,9 @@ interface InfoRowProps {
   color?: string;
 }
 
-const InfoRow: React.FC<InfoRowProps> = ({ label, value, color = "text-white" }) => (
+const InfoRow: React.FC<InfoRowProps> = ({ label, value, color = "text-foreground" }) => (
   <div className="flex justify-between items-center text-sm">
-    <span className="text-slate-500 font-medium">{label}</span>
+    <span className="text-muted-foreground font-medium">{label}</span>
     <span className={`${color} font-semibold`}>{value}</span>
   </div>
 );

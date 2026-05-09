@@ -9,17 +9,17 @@ interface PrayerRowProps {
 }
 
 const PrayerRow: React.FC<PrayerRowProps> = ({ name, time, endTime, isActive, icon }) => (
-  <div className={`grid grid-cols-12 items-center px-6 py-5 rounded-2xl transition-all duration-300 ${isActive ? 'bg-primary/10 border border-primary/20 shadow-lg' : 'hover:bg-white/5'}`}>
+  <div className={`grid grid-cols-12 items-center px-6 py-5 rounded-2xl transition-all duration-300 ${isActive ? 'bg-primary/10 border border-primary/20 shadow-sm' : 'hover:bg-muted/50'}`}>
     <div className="col-span-6 flex items-center gap-4">
-      <div className={`p-2 rounded-lg ${isActive ? 'bg-primary text-slate-900' : 'bg-slate-800 text-slate-400'}`}>
+      <div className={`p-2 rounded-lg ${isActive ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
         {icon}
       </div>
-      <span className={`text-xl font-bold ${isActive ? 'text-primary' : 'text-slate-300'}`}>{name}</span>
+      <span className={`text-xl font-bold ${isActive ? 'text-primary' : 'text-foreground/80'}`}>{name}</span>
     </div>
-    <div className={`col-span-3 text-right font-bold font-mono ${isActive ? 'text-primary text-xl' : 'text-slate-400'}`}>
+    <div className={`col-span-3 text-right font-bold font-mono ${isActive ? 'text-primary text-xl' : 'text-foreground'}`}>
       {time}
     </div>
-    <div className="col-span-3 text-right font-medium font-mono text-slate-600">
+    <div className="col-span-3 text-right font-medium font-mono text-muted-foreground">
       {endTime}
     </div>
   </div>

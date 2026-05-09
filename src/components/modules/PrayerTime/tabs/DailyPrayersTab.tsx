@@ -29,18 +29,18 @@ const DailyPrayersTab: React.FC<DailyPrayersTabProps> = ({ prayerData, location,
           <div className="bg-primary/20 p-4 rounded-2xl w-fit mb-4">
             <Moon className="w-10 h-10 text-primary" />
           </div>
-          <p className="text-slate-400 text-sm font-medium mb-1">Today Namaz Times in</p>
-          <h3 className="text-4xl font-bold">{location.city}, {location.country}</h3>
+          <p className="text-muted-foreground text-sm font-medium mb-1">Today Namaz Times in</p>
+          <h3 className="text-4xl font-bold text-foreground">{location.city}, {location.country}</h3>
         </div>
         <div className="text-right">
-          <div className="text-6xl font-bold mb-1">{prayerData.date.hijri.day}</div>
-          <div className="text-slate-400 font-medium">{prayerData.date.hijri.month.en}</div>
-          <div className="text-slate-500 text-sm">{prayerData.date.hijri.year} AH</div>
+          <div className="text-6xl font-bold mb-1 text-foreground">{prayerData.date.hijri.day}</div>
+          <div className="text-muted-foreground font-medium">{prayerData.date.hijri.month.en}</div>
+          <div className="text-muted-foreground text-sm">{prayerData.date.hijri.year} AH</div>
         </div>
       </div>
 
       <div className="space-y-2">
-        <div className="grid grid-cols-12 px-6 py-2 text-slate-500 text-xs font-bold uppercase tracking-widest">
+        <div className="grid grid-cols-12 px-6 py-2 text-muted-foreground text-xs font-bold uppercase tracking-widest">
           <div className="col-span-6">Prayer</div>
           <div className="col-span-3 text-right">Start</div>
           <div className="col-span-3 text-right">End</div>

@@ -7,12 +7,12 @@ interface OtherTimeRowProps {
 }
 
 const OtherTimeRow: React.FC<OtherTimeRowProps> = ({ name, time, isGreen }) => (
-  <div className="flex justify-between items-center px-8 py-6 bg-white/5 rounded-2xl hover:bg-white/10 transition-colors">
+  <div className="flex justify-between items-center px-8 py-6 bg-muted/20 rounded-2xl hover:bg-muted/30 transition-colors">
     <div className="flex items-center gap-4">
-      <div className={`w-2 h-2 rounded-full ${isGreen ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' : 'bg-slate-600'}`} />
-      <span className={`text-xl font-bold ${isGreen ? 'text-emerald-500' : 'text-slate-300'}`}>{name}</span>
+      <div className={`w-2 h-2 rounded-full ${isGreen ? 'bg-primary shadow-[0_0_10px_rgba(var(--primary),0.5)]' : 'bg-muted-foreground'}`} />
+      <span className={`text-xl font-bold ${isGreen ? 'text-primary' : 'text-foreground/80'}`}>{name}</span>
     </div>
-    <div className={`text-2xl font-mono font-bold ${isGreen ? 'text-emerald-500' : 'text-slate-400'}`}>{time}</div>
+    <div className={`text-2xl font-mono font-bold ${isGreen ? 'text-primary' : 'text-muted-foreground'}`}>{time}</div>
   </div>
 );
 

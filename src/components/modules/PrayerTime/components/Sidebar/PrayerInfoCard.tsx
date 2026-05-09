@@ -9,12 +9,12 @@ interface PrayerInfoCardProps {
 }
 
 const PrayerInfoCard: React.FC<PrayerInfoCardProps> = ({ method, timezone, date }) => (
-  <div className="bg-slate-900/40 backdrop-blur-md border border-white/5 p-8 rounded-[2rem]">
+  <div className="bg-card border border-border p-8 rounded-[2rem] shadow-sm">
     <div className="flex items-center justify-between mb-6">
-      <h3 className="font-bold flex items-center gap-2">
+      <h3 className="font-bold flex items-center gap-2 text-foreground">
         <Info className="w-5 h-5 text-primary" /> Prayer Information
       </h3>
-      <Clock className="w-5 h-5 text-slate-500" />
+      <Clock className="w-5 h-5 text-muted-foreground" />
     </div>
     <div className="space-y-4">
       <InfoRow label="Calculation Method" value={method} />

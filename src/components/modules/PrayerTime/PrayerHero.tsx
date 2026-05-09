@@ -35,10 +35,10 @@ const PrayerHero: React.FC<PrayerHeroProps> = ({
 
   if (!prayerData || !prayerData.date) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0A0F1C] text-white">
+      <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
         <div className="animate-pulse flex flex-col items-center gap-4">
           <Clock className="w-12 h-12 text-primary animate-spin" />
-          <p className="text-slate-400 font-medium">Loading prayer data...</p>
+          <p className="text-muted-foreground font-medium">Loading prayer data...</p>
         </div>
       </div>
     );
@@ -62,11 +62,11 @@ const PrayerHero: React.FC<PrayerHeroProps> = ({
   };
 
   return (
-    <section className="relative min-h-screen bg-[#0A0F1C] text-white overflow-hidden py-20 px-6">
+    <section className="relative min-h-screen bg-background text-foreground overflow-hidden py-20 px-6">
       {/* Background Glows */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-emerald-500/10 rounded-full blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/10 rounded-full blur-[120px]" />
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px]" />
       </div>
 
       <div className="relative container mx-auto z-10">
@@ -76,11 +76,11 @@ const PrayerHero: React.FC<PrayerHeroProps> = ({
             Islamic Prayer Times in {location.city} <MapPin className="inline-block w-8 h-8 text-primary ml-2" />
           </h1>
           <div className="flex flex-col items-center gap-2">
-            <p className="text-slate-400 flex items-center gap-2">
-              Location: <span className="text-white font-medium">{location.city}, {location.country}</span>
+            <p className="text-muted-foreground flex items-center gap-2">
+              Location: <span className="text-foreground font-medium">{location.city}, {location.country}</span>
               <button className="text-primary hover:underline text-sm font-semibold ml-1">(Change)</button>
             </p>
-            <p className="text-slate-500 font-medium">{prayerData.date.readable}</p>
+            <p className="text-muted-foreground font-medium">{prayerData.date.readable}</p>
           </div>
         </header>
 
@@ -106,8 +106,8 @@ const PrayerHero: React.FC<PrayerHeroProps> = ({
           </aside>
 
           {/* Right Column - Main Content Area with Tabs */}
-          <main className="lg:col-span-8 bg-slate-900/40 backdrop-blur-xl border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl">
-            <nav className="flex border-b border-white/5 px-8 pt-6 overflow-x-auto no-scrollbar">
+          <main className="lg:col-span-8 bg-card border border-border rounded-[2.5rem] overflow-hidden shadow-sm">
+            <nav className="flex border-b border-border px-8 pt-6 overflow-x-auto no-scrollbar">
               <TabButton 
                 label="Daily Prayers" 
                 icon={<Clock className="w-4 h-4" />} 
