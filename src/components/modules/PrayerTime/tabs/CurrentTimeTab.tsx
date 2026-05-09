@@ -29,7 +29,7 @@ const CurrentTimeTab: React.FC<CurrentTimeTabProps> = ({ prayerData, location, c
       <div className="space-y-6">
         <StaticRow label="Sunrise" value={formatTime(prayerData.timings.Sunrise)} />
         <StaticRow label="Sunset" value={formatTime(prayerData.timings.Sunset)} />
-        <div className="h-px bg-white/5 my-4" />
+        <div className="h-px bg-border my-4" />
         <StaticRow label="Gregorian Date" value={currentTime.format("MMMM DD, YYYY")} />
         <StaticRow label="Bangla Date" value={getBanglaDate()} />
         <StaticRow label="Arabic Date" value={`${prayerData.date.hijri.month.en} ${prayerData.date.hijri.day}, ${prayerData.date.hijri.year} AH`} />

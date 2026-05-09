@@ -99,7 +99,7 @@ export default function HadithReader({ bookName, initialHadiths }: HadithReaderP
         {/* Main Content */}
         <main className="lg:col-span-3">
           <div className="mb-8 flex flex-col items-center justify-center text-center">
-            <h1 className="text-4xl font-extrabold text-slate-900 mb-2">{displayName}</h1>
+            <h1 className="text-4xl font-extrabold text-foreground mb-2">{displayName}</h1>
             <p className="text-muted-foreground">Exploring the collections of prophet Muhammad (PBUH)</p>
             <div className="mt-4 h-1.5 w-24 rounded-full bg-primary" />
           </div>
@@ -118,7 +118,7 @@ export default function HadithReader({ bookName, initialHadiths }: HadithReaderP
                 }
               })
             ) : (
-              <div className="flex h-60 items-center justify-center rounded-xl bg-slate-50 text-slate-500 italic">
+              <div className="flex h-60 items-center justify-center rounded-xl bg-muted/20 text-muted-foreground italic">
                 No hadiths found for this collection.
               </div>
             )}

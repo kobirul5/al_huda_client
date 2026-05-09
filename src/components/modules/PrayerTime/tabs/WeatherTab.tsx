@@ -43,11 +43,11 @@ const WeatherTab: React.FC<WeatherTabProps> = ({ weatherData, prayerData, locati
 
       <div className="grid grid-cols-4 md:grid-cols-7 gap-4">
         {forecast.map((day: any, i: number) => (
-          <div key={i} className={`p-4 rounded-2xl text-center border ${i === 0 ? 'bg-primary/10 border-primary/20' : 'bg-white/5 border-transparent'}`}>
+          <div key={i} className={`p-4 rounded-2xl text-center border ${i === 0 ? 'bg-primary/10 border-primary/20' : 'bg-card border-transparent'}`}>
             <div className="text-xs text-slate-500 font-bold mb-2">{dayjs().add(i, 'day').format("ddd")}</div>
             <CloudSun className="w-8 h-8 mx-auto mb-3 text-slate-400" />
-            <div className="text-sm font-bold text-white">{day.avgtempC}°</div>
-            <div className="text-[10px] text-slate-500">{day.mintempC}°</div>
+            <div className="text-sm font-bold text-foreground">{day.avgtempC}°</div>
+            <div className="text-[10px] text-muted-foreground">{day.mintempC}°</div>
           </div>
         ))}
       </div>

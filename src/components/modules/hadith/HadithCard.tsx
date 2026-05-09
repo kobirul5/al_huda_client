@@ -38,7 +38,7 @@ export default function HadithCard({ hadith }: HadithCardProps) {
         <div className="space-y-6">
           {/* Arabic Text */}
           <div className="text-right">
-            <p className="text-2xl font-semibold leading-loose text-slate-800" dir="rtl">
+            <p className="text-2xl font-semibold leading-loose text-foreground" dir="rtl">
               {hadith.arabic}
             </p>
           </div>
@@ -46,13 +46,13 @@ export default function HadithCard({ hadith }: HadithCardProps) {
           {/* Bangla Translation */}
           <div className="rounded-lg bg-primary/5 p-4 border-l-4 border-primary/30">
             <p className="text-sm font-medium text-primary/70 mb-1 uppercase tracking-wider">Bangla</p>
-            <p className="text-lg text-slate-700 leading-relaxed">{hadith.bangla}</p>
+            <p className="text-lg text-foreground leading-relaxed">{hadith.bangla}</p>
           </div>
 
           {/* English Translation */}
-          <div className="rounded-lg bg-slate-50 p-4 border-l-4 border-slate-200">
-            <p className="text-sm font-medium text-slate-400 mb-1 uppercase tracking-wider">English</p>
-            <p className="text-base text-slate-600 italic leading-relaxed">{hadith.english}</p>
+          <div className="rounded-lg bg-muted/30 p-4 border-l-4 border-border">
+            <p className="text-sm font-medium text-muted-foreground mb-1 uppercase tracking-wider">English</p>
+            <p className="text-base text-muted-foreground italic leading-relaxed">{hadith.english}</p>
           </div>
         </div>
       </CardContent>

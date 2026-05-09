@@ -70,8 +70,8 @@ const PrayerHero: React.FC<PrayerHeroProps> = ({
         backgroundPosition: "center",
       }}
     >
-      {/* Overlay to ensure text readability */}
-      <div className="absolute inset-0 bg-background/40 backdrop-blur-[2px]" />
+      {/* Theme-aware overlay to ensure text readability */}
+      <div className="absolute inset-0 bg-background/60 dark:bg-background/80 backdrop-blur-sm" />
 
       <div className="relative container mx-auto z-10">
         {/* Header */}
