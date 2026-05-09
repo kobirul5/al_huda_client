@@ -1,16 +1,24 @@
 "use client";
 
 import Link from "next/link";
-import { BookOpen } from "lucide-react";
+import { Bookmark, BookOpen } from "lucide-react";
 import VerseCard, { arabicFontFamilyMap } from "@/components/modules/surah/VerseCard";
 import { useReaderSettings } from "./ReaderSettingsProvider";
 import { Verse } from "./types";
+import { useBookmark } from "@/hooks/useBookmark";
+import { cn } from "@/lib/utils";
 
 interface ReaderContentProps {
   title: string;
   subtitle: string;
   verses: Verse[];
   emptyMessage?: string;
+  surahInfo?: {
+    id: number;
+    name: string;
+    transliteration: string;
+    total_verses: number;
+  };
   previous?: {
     href: string;
     label: string;
@@ -26,10 +34,17 @@ export default function ReaderContent({
   subtitle,
   verses,
   emptyMessage = "No ayahs found",
+  surahInfo,
   previous,
   next,
 }: ReaderContentProps) {
   const { settings } = useReaderSettings();
+  const { isBookmarked, toggleBookmark } = useBookmark(surahInfo ? {
+    id: surahInfo.id,
+    name: surahInfo.name,
+    transliteration: surahInfo.transliteration,
+    total_verses: surahInfo.total_verses
+  } : null);
 
   return (
     <section className="mx-auto max-w-5xl px-4 py-6 md:px-8 md:py-8">
@@ -37,9 +52,23 @@ export default function ReaderContent({
         <div className="hidden opacity-20 md:block">
           <BookOpen className="h-20 w-20 text-muted-foreground" />
         </div>
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-foreground">{title}</h2>
-          <p className="mt-2 text-sm text-muted-foreground">{subtitle}</p>
+        <div className="flex flex-col items-center justify-center gap-4 text-center">
+          <div className="flex items-center gap-4">
+            <h2 className="text-2xl font-bold text-foreground">{title}</h2>
+            {surahInfo && (
+              <button
+                onClick={toggleBookmark}
+                className={cn(
+                  "p-2 rounded-full transition hover:bg-accent",
+                  isBookmarked ? "text-primary" : "text-muted-foreground"
+                )}
+                title={isBookmarked ? "Remove Surah from bookmarks" : "Bookmark Surah"}
+              >
+                <Bookmark className={cn("h-6 w-6", isBookmarked && "fill-current")} />
+              </button>
+            )}
+          </div>
+          <p className="text-sm text-muted-foreground">{subtitle}</p>
         </div>
         <div className="hidden md:block" />
       </div>

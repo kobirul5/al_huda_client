@@ -25,6 +25,8 @@ import { ReaderSettingsProvider } from "./ReaderSettingsProvider";
 import { AudioProvider } from "./AudioProvider";
 import ReaderSettingsPanel from "./ReaderSettingsPanel";
 import { PageSummary, ParaSummary, ReaderTab, SurahListItem } from "./types";
+import { useBookmark } from "@/hooks/useBookmark";
+import { cn } from "@/lib/utils";
 
 const railLinks = [
   { href: "/", label: "Home", icon: Home },
@@ -44,6 +46,69 @@ function getActiveTab(pathname: string): ReaderTab {
   }
 
   return "surah";
+}
+
+function SurahNavItem({ 
+  item, 
+  active, 
+  onNavigate 
+}: { 
+  item: SurahListItem; 
+  active: boolean; 
+  onNavigate?: () => void;
+}) {
+  const { isBookmarked, toggleBookmark } = useBookmark({
+    id: item.id,
+    name: item.name,
+    transliteration: item.transliteration,
+    total_verses: item.total_verses
+  });
+
+  return (
+    <div className="group relative">
+      <Link
+        href={`/surah/${item.id}`}
+        onClick={onNavigate}
+        className={`flex items-center gap-3 rounded-xl border p-3 transition ${
+          active
+            ? "border-primary/40 bg-primary/10"
+            : "border-border bg-sidebar hover:border-primary/25 hover:bg-card"
+        }`}
+      >
+        <span
+          className={`grid h-10 w-10 shrink-0 rotate-45 place-items-center rounded-lg ${
+            active ? "bg-primary text-primary-foreground" : "bg-card text-muted-foreground"
+          }`}
+        >
+          <span className="-rotate-45 text-sm font-bold">{item.id}</span>
+        </span>
+        <div className="min-w-0 flex-1 pr-8">
+          <span className="block truncate text-sm font-bold text-foreground">{item.transliteration}</span>
+          <span className="block truncate text-xs text-muted-foreground">{item.total_verses} Ayah</span>
+        </div>
+        <span
+          className="max-w-18 truncate text-right text-lg text-muted-foreground"
+          style={{ fontFamily: arabicFontFamilyMap.amiri }}
+        >
+          {item.name}
+        </span>
+      </Link>
+      <button
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          toggleBookmark();
+        }}
+        className={cn(
+          "absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full transition opacity-0 group-hover:opacity-100",
+          isBookmarked ? "text-primary opacity-100" : "text-muted-foreground hover:bg-accent"
+        )}
+        title={isBookmarked ? "Remove from bookmarks" : "Bookmark surah"}
+      >
+        <Bookmark className={cn("h-4 w-4", isBookmarked && "fill-current")} />
+      </button>
+    </div>
+  );
 }
 
 function ReaderNavigation({
@@ -150,40 +215,14 @@ function ReaderNavigation({
 
       <div className="green-scrollbar min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
         {activeTab === "surah"
-          ? filteredSurahs.map((item) => {
-              const active = pathname === `/surah/${item.id}`;
-
-              return (
-                <Link
-                  key={item.id}
-                  href={`/surah/${item.id}`}
-                  onClick={onNavigate}
-                  className={`flex items-center gap-3 rounded-xl border p-3 transition ${
-                    active
-                      ? "border-primary/40 bg-primary/10"
-                      : "border-border bg-sidebar hover:border-primary/25 hover:bg-card"
-                  }`}
-                >
-                  <span
-                    className={`grid h-10 w-10 shrink-0 rotate-45 place-items-center rounded-lg ${
-                      active ? "bg-primary text-primary-foreground" : "bg-card text-muted-foreground"
-                    }`}
-                  >
-                    <span className="-rotate-45 text-sm font-bold">{item.id}</span>
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-bold text-foreground">{item.transliteration}</span>
-                    <span className="block truncate text-xs text-muted-foreground">{item.total_verses} Ayah</span>
-                  </span>
-                  <span
-                    className="max-w-18 truncate text-right text-lg text-muted-foreground"
-                    style={{ fontFamily: arabicFontFamilyMap.amiri }}
-                  >
-                    {item.name}
-                  </span>
-                </Link>
-              );
-            })
+          ? filteredSurahs.map((item) => (
+              <SurahNavItem
+                key={item.id}
+                item={item}
+                active={pathname === `/surah/${item.id}`}
+                onNavigate={onNavigate}
+              />
+            ))
           : null}
 
         {activeTab === "juz"
@@ -215,44 +254,33 @@ function ReaderNavigation({
                       >
                         <span className="-rotate-45 text-sm font-bold">{item.id}</span>
                       </span>
-                      <span className="min-w-0 flex-1">
+                      <div className="min-w-0 flex-1">
                         <span className="block truncate text-sm font-bold text-foreground">Juz {item.id}</span>
                         <span className="block truncate text-xs text-muted-foreground">
-                          {firstSurah?.transliteration} - {lastSurah?.transliteration}
+                          {firstSurah?.transliteration} {item.start?.ayah} - {lastSurah?.transliteration} {item.end?.ayah}
                         </span>
-                      </span>
+                      </div>
                     </Link>
                     <button
                       onClick={() => setExpandedJuzId(expanded ? null : item.id)}
-                      className="grid h-8 w-8 shrink-0 place-items-center rounded-md text-muted-foreground transition hover:bg-accent hover:text-foreground"
-                      title={expanded ? "Hide surahs" : "Show surahs"}
+                      className="grid h-8 w-8 place-items-center rounded-md text-muted-foreground transition hover:bg-accent hover:text-foreground"
                     >
                       <ChevronDown className={`h-4 w-4 transition ${expanded ? "rotate-180" : ""}`} />
                     </button>
                   </div>
 
                   {expanded ? (
-                    <div className="space-y-1 border-t border-border px-3 py-2">
+                    <div className="space-y-1 border-t border-border/50 p-2">
                       {item.surahs.map((surah) => (
                         <Link
-                          key={`${item.id}-${surah.id}-${surah.start_ayah}`}
-                          href={`/juz/${item.id}#surah-${surah.id}-ayah-${surah.start_ayah}`}
+                          key={surah.id}
+                          href={`/surah/${surah.id}#surah-${surah.id}-ayah-${surah.start_ayah}`}
                           onClick={onNavigate}
-                          className="flex items-center justify-between gap-3 rounded-lg px-2 py-2 text-xs transition hover:bg-accent"
+                          className="flex items-center justify-between gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition hover:bg-accent hover:text-foreground"
                         >
-                          <span className="min-w-0">
-                            <span className="block truncate font-semibold text-foreground">
-                              {surah.id}. {surah.transliteration}
-                            </span>
-                            <span className="block truncate text-muted-foreground">
-                              Ayah {surah.start_ayah}-{surah.end_ayah}
-                            </span>
-                          </span>
-                          <span
-                            className="max-w-16 shrink-0 truncate text-right text-base text-muted-foreground"
-                            style={{ fontFamily: arabicFontFamilyMap.amiri }}
-                          >
-                            {surah.name}
+                          <span className="truncate">{surah.transliteration}</span>
+                          <span className="shrink-0 text-xs opacity-60">
+                            {surah.start_ayah}-{surah.end_ayah}
                           </span>
                         </Link>
                       ))}
@@ -281,20 +309,18 @@ function ReaderNavigation({
                   }`}
                 >
                   <span
-                    className={`grid h-10 w-10 shrink-0 place-items-center rounded-lg ${
+                    className={`grid h-10 w-10 shrink-0 rotate-45 place-items-center rounded-lg ${
                       active ? "bg-primary text-primary-foreground" : "bg-card text-muted-foreground"
                     }`}
                   >
-                    <span className="text-sm font-bold">{item.id}</span>
+                    <span className="-rotate-45 text-sm font-bold">{item.id}</span>
                   </span>
-                  <span className="min-w-0 flex-1">
+                  <div className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-bold text-foreground">Page {item.id}</span>
                     <span className="block truncate text-xs text-muted-foreground">
-                      {firstSurah?.transliteration}
-                      {lastSurah && lastSurah.id !== firstSurah?.id ? ` - ${lastSurah.transliteration}` : ""}
+                      {firstSurah?.transliteration} {item.start.ayah} - {lastSurah?.transliteration} {item.end.ayah}
                     </span>
-                  </span>
-                  <span className="shrink-0 text-xs font-semibold text-muted-foreground">{item.total_verses} Ayah</span>
+                  </div>
                 </Link>
               );
             })

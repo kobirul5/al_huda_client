@@ -16,6 +16,8 @@ export const arabicFontFamilyMap: Record<ReaderSettings["arabicFont"], string> =
   notoNaskh: "var(--font-arabic-naskh), serif",
 };
 
+import { useVerseBookmark } from "@/hooks/useVerseBookmark";
+
 interface VerseCardProps {
   verse: Verse;
   settings: ReaderSettings;
@@ -24,6 +26,7 @@ interface VerseCardProps {
 
 const VerseCard: React.FC<VerseCardProps> = ({ verse, settings, playlist = [] }) => {
   const { currentVerseId, isPlaying, isLoading, toggle } = useAudio();
+  const { isBookmarked, toggleBookmark } = useVerseBookmark(verse);
   
   const verseKey = `${verse.surahId}-${verse.id}`;
   const isCurrentlyPlaying = currentVerseId === verseKey && isPlaying;
@@ -65,8 +68,15 @@ const VerseCard: React.FC<VerseCardProps> = ({ verse, settings, playlist = [] })
           <button className="grid h-8 w-8 place-items-center rounded-md transition hover:bg-accent hover:text-foreground" title="Read notes">
             <StickyNote className="h-5 w-5" />
           </button>
-          <button className="grid h-8 w-8 place-items-center rounded-md transition hover:bg-accent hover:text-foreground" title="Bookmark">
-            <Bookmark className="h-5 w-5" />
+          <button 
+            onClick={toggleBookmark}
+            className={cn(
+              "grid h-8 w-8 place-items-center rounded-md transition hover:bg-accent hover:text-foreground",
+              isBookmarked && "text-primary bg-primary/10"
+            )} 
+            title={isBookmarked ? "Remove bookmark" : "Bookmark"}
+          >
+            <Bookmark className={cn("h-5 w-5", isBookmarked && "fill-current")} />
           </button>
           <button className="grid h-8 w-8 place-items-center rounded-md transition hover:bg-accent hover:text-foreground" title="More">
             <MoreHorizontal className="h-5 w-5" />
