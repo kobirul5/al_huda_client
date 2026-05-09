@@ -31,8 +31,8 @@ const RamadanHero: React.FC<RamadanHeroProps> = ({
         backgroundPosition: "center",
       }}
     >
-      {/* Overlay to ensure text readability without being "dark theme" */}
-      <div className="absolute inset-0 bg-white/40 backdrop-blur-[2px]" />
+      {/* Theme-aware overlay to ensure text readability */}
+      <div className="absolute inset-0 bg-background/60 dark:bg-background/80 backdrop-blur-sm" />
 
       <div className="relative z-10 max-w-4xl w-full text-center">
         {/* Title Section */}
