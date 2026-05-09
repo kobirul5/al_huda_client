@@ -5,7 +5,7 @@ async function getPrayerTimeData(city: string = "Dhaka", country: string = "Bang
 
   try {
     const res = await fetch(`${apiUrl}/prayer-time?city=${city}&country=${country}`, {
-      cache: "no-store", 
+      next: { revalidate: 3600 }, 
     });
 
     if (!res.ok) {
@@ -25,10 +25,10 @@ export default async function PrayerTimePage() {
 
   if (!prayerData) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0A0F1C] text-white">
+      <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Unable to load prayer times</h1>
-          <p className="text-slate-400">Please try again later.</p>
+          <p className="text-muted-foreground">Please try again later.</p>
         </div>
       </div>
     );

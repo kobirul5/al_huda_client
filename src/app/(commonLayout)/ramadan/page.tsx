@@ -8,7 +8,7 @@ async function getRamadanData() {
 
   try {
     const res = await fetch(`${apiUrl}/prayer-time?city=${city}&country=${country}`, {
-      cache: "no-store",
+      next: { revalidate: 3600 },
     });
 
     if (!res.ok) return null;
