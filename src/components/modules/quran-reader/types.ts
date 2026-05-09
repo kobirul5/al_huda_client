@@ -10,6 +10,7 @@ export interface Verse {
   surahArabicName?: string;
   showSurahHeading?: boolean;
   headingAnchorId?: string;
+  audio?: string;
 }
 
 export interface SurahListItem {

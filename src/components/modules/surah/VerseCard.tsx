@@ -1,5 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Bookmark, MoreHorizontal, Play, Pause, StickyNote, Loader2 } from "lucide-react";
+import { useAudio } from "@/components/modules/quran-reader/AudioProvider";
+import { Verse } from "@/components/modules/quran-reader/types";
+import { cn } from "@/lib/utils";
 
 export interface ReaderSettings {
   arabicFont: "amiri" | "notoNaskh";
@@ -14,26 +17,17 @@ export const arabicFontFamilyMap: Record<ReaderSettings["arabicFont"], string> =
 };
 
 interface VerseCardProps {
-  verse: {
-    id: number;
-    surahId?: number;
-    surahName?: string;
-    headingAnchorId?: string;
-    text: string;
-    translation: string;
-    transliteration: string;
-    audio?: string;
-  };
+  verse: Verse;
   settings: ReaderSettings;
+  playlist?: Verse[];
 }
 
-// Singleton to track currently playing audio across all VerseCard instances
-let globalAudio: HTMLAudioElement | null = null;
-let globalSetIsPlaying: ((playing: boolean) => void) | null = null;
-
-const VerseCard: React.FC<VerseCardProps> = ({ verse, settings }) => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+const VerseCard: React.FC<VerseCardProps> = ({ verse, settings, playlist = [] }) => {
+  const { currentVerseId, isPlaying, isLoading, toggle } = useAudio();
+  
+  const verseKey = `${verse.surahId}-${verse.id}`;
+  const isCurrentlyPlaying = currentVerseId === verseKey && isPlaying;
+  const isCurrentlyLoading = currentVerseId === verseKey && isLoading;
 
   const translationLineHeight = Math.round(settings.translationFontSize * 1.8);
   const verseAnchorId = verse.headingAnchorId
@@ -43,50 +37,8 @@ const VerseCard: React.FC<VerseCardProps> = ({ verse, settings }) => {
       : undefined;
 
   const handlePlay = () => {
-    if (!verse.audio) return;
-
-    if (isPlaying) {
-      globalAudio?.pause();
-      setIsPlaying(false);
-      return;
-    }
-
-    // Stop any existing audio
-    if (globalAudio) {
-      globalAudio.pause();
-      if (globalSetIsPlaying) globalSetIsPlaying(false);
-    }
-
-    setIsLoading(true);
-    const audio = new Audio(verse.audio);
-    globalAudio = audio;
-    globalSetIsPlaying = setIsPlaying;
-
-    audio.play().then(() => {
-      setIsLoading(false);
-      setIsPlaying(true);
-    }).catch((err) => {
-      console.error("Audio playback failed:", err);
-      setIsLoading(false);
-    });
-
-    audio.onended = () => {
-      setIsPlaying(false);
-      globalAudio = null;
-      globalSetIsPlaying = null;
-    };
+    toggle(verse, playlist);
   };
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (isPlaying) {
-        globalAudio?.pause();
-        globalAudio = null;
-        globalSetIsPlaying = null;
-      }
-    };
-  }, [isPlaying]);
 
   return (
     <article id={verseAnchorId} className="scroll-mt-8 grid gap-5 py-8 md:grid-cols-[54px_minmax(0,1fr)] md:py-9">
@@ -96,15 +48,15 @@ const VerseCard: React.FC<VerseCardProps> = ({ verse, settings }) => {
           <button 
             className={cn(
               "grid h-8 w-8 place-items-center rounded-md transition hover:bg-accent hover:text-foreground",
-              isPlaying && "bg-primary/10 text-primary"
+              isCurrentlyPlaying && "bg-primary/10 text-primary"
             )}
             onClick={handlePlay}
-            disabled={isLoading || !verse.audio}
-            title={isPlaying ? "Pause ayah" : "Play ayah"}
+            disabled={isCurrentlyLoading || !verse.audio}
+            title={isCurrentlyPlaying ? "Pause ayah" : "Play ayah"}
           >
-            {isLoading ? (
+            {isCurrentlyLoading ? (
               <Loader2 className="h-5 w-5 animate-spin" />
-            ) : isPlaying ? (
+            ) : isCurrentlyPlaying ? (
               <Pause className="h-5 w-5 fill-current" />
             ) : (
               <Play className="h-5 w-5" />
@@ -153,6 +105,5 @@ const VerseCard: React.FC<VerseCardProps> = ({ verse, settings }) => {
 };
 
 // Utility function to merge class names (assuming it's available in the project)
-import { cn } from "@/lib/utils";
 
 export default VerseCard;

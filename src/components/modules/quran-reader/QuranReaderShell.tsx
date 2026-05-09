@@ -22,6 +22,7 @@ import {
 import { useTheme } from "next-themes";
 import { arabicFontFamilyMap } from "@/components/modules/surah/VerseCard";
 import { ReaderSettingsProvider } from "./ReaderSettingsProvider";
+import { AudioProvider } from "./AudioProvider";
 import ReaderSettingsPanel from "./ReaderSettingsPanel";
 import { PageSummary, ParaSummary, ReaderTab, SurahListItem } from "./types";
 
@@ -325,7 +326,8 @@ export default function QuranReaderShell({
 
   return (
     <ReaderSettingsProvider>
-      <div className="h-dvh overflow-hidden bg-background text-foreground">
+      <AudioProvider>
+        <div className="h-dvh overflow-hidden bg-background text-foreground">
         <aside className="fixed inset-y-0 left-0 z-40 hidden w-16 border-r border-border bg-sidebar px-2 py-3 md:flex md:flex-col md:items-center">
           <Link href="/" className="mb-16 grid h-10 w-10 place-items-center rounded-xl bg-primary text-primary-foreground">
             <BookOpen className="h-6 w-6" />
@@ -460,6 +462,7 @@ export default function QuranReaderShell({
           </div>
         ) : null}
       </div>
+      </AudioProvider>
     </ReaderSettingsProvider>
   );
 }

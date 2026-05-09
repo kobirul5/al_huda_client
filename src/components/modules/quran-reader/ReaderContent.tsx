@@ -62,7 +62,7 @@ export default function ReaderContent({
                   ) : null}
                 </div>
               ) : null}
-              <VerseCard verse={verse} settings={settings} />
+              <VerseCard verse={verse} settings={settings} playlist={verses} />
             </div>
           ))
         ) : (
