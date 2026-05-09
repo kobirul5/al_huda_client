@@ -34,42 +34,42 @@ const RamadanHero: React.FC<RamadanHeroProps> = ({
       {/* Overlay to ensure text readability without being "dark theme" */}
       <div className="absolute inset-0 bg-white/40 backdrop-blur-[2px]" />
 
-      <div className="relative z-10 max-w-5xl w-full text-center">
+      <div className="relative z-10 max-w-4xl w-full text-center">
         {/* Title Section */}
-        <div className="flex flex-col items-center mb-12">
-          <div className="flex items-center gap-3 mb-4">
-             <Moon className="w-10 h-10 text-primary fill-primary/20" />
-             <h1 className="text-4xl md:text-6xl font-black text-foreground tracking-tight">
+        <div className="flex flex-col items-center mb-8">
+          <div className="flex items-center gap-3 mb-3">
+             <Moon className="w-8 h-8 text-primary fill-primary/20" />
+             <h1 className="text-3xl md:text-5xl font-black text-foreground tracking-tight">
                Ramadan Mubarak 2026
              </h1>
           </div>
-          <div className="flex items-center gap-4 text-muted-foreground font-semibold uppercase tracking-widest text-sm">
-            <span className="flex items-center gap-1"><MapPin className="w-4 h-4 text-primary" /> {location.city}, {location.country}</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-border" />
-            <span className="flex items-center gap-1"><Calendar className="w-4 h-4 text-primary" /> {prayerData.date.hijri.day} {prayerData.date.hijri.month.en} {prayerData.date.hijri.year}</span>
+          <div className="flex items-center gap-3 text-muted-foreground font-semibold uppercase tracking-widest text-[10px]">
+            <span className="flex items-center gap-1"><MapPin className="w-3 h-3 text-primary" /> {location.city}, {location.country}</span>
+            <span className="w-1 h-1 rounded-full bg-border" />
+            <span className="flex items-center gap-1"><Calendar className="w-3 h-3 text-primary" /> {prayerData.date.hijri.day} {prayerData.date.hijri.month.en} {prayerData.date.hijri.year}</span>
           </div>
         </div>
 
         {/* Countdown Section */}
-        <div className="bg-card/80 backdrop-blur-xl border border-primary/20 rounded-[2.5rem] p-10 mb-10 shadow-xl shadow-primary/5">
-          <div className="flex items-center justify-center gap-3 mb-8">
-            <Timer className="w-6 h-6 text-primary" />
-            <h2 className="text-xl font-bold uppercase tracking-[0.2em] text-foreground">Ramadan Countdown</h2>
+        <div className="bg-card/80 backdrop-blur-xl border border-primary/20 rounded-2xl p-6 mb-8 shadow-lg shadow-primary/5">
+          <div className="flex items-center justify-center gap-2 mb-6">
+            <Timer className="w-5 h-5 text-primary" />
+            <h2 className="text-sm font-bold uppercase tracking-[0.2em] text-foreground">Ramadan Countdown</h2>
           </div>
           
-          <div className="flex justify-center gap-4 md:gap-8">
+          <div className="flex justify-center gap-3 md:gap-6">
             <CountdownBox value={timeLeft.days} label="Days" />
-            <span className="text-4xl font-bold text-primary self-center pb-8">:</span>
+            <span className="text-3xl font-bold text-primary self-center pb-6">:</span>
             <CountdownBox value={timeLeft.hours} label="Hours" />
-            <span className="text-4xl font-bold text-primary self-center pb-8">:</span>
+            <span className="text-3xl font-bold text-primary self-center pb-6">:</span>
             <CountdownBox value={timeLeft.minutes} label="Mins" />
-            <span className="text-4xl font-bold text-primary self-center pb-8">:</span>
+            <span className="text-3xl font-bold text-primary self-center pb-6">:</span>
             <CountdownBox value={timeLeft.seconds} label="Secs" />
           </div>
         </div>
 
         {/* Sehri & Iftar Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
           {/* Sehri Card */}
           <DuaCard 
             type="Sehri"

@@ -14,16 +14,16 @@ const OtherTimesTab: React.FC<OtherTimesTabProps> = ({ prayerData, location }) =
     <div className="p-10">
       <div className="flex justify-between items-center mb-12">
         <div>
-          <div className="bg-primary/20 p-4 rounded-2xl w-fit mb-4">
-            <Sun className="w-10 h-10 text-primary" />
+          <div className="bg-primary/20 p-3 rounded-xl w-fit mb-3">
+            <Sun className="w-8 h-8 text-primary" />
           </div>
-          <p className="text-muted-foreground text-sm font-medium mb-1">Nafl Namaz Times in</p>
-          <h3 className="text-4xl font-bold text-foreground">{location.city}, {location.country}</h3>
+          <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest mb-1">Nafl Namaz Times in</p>
+          <h3 className="text-2xl md:text-3xl font-black text-foreground">{location.city}, {location.country}</h3>
         </div>
         <div className="text-right">
-          <div className="text-6xl font-bold mb-1 text-foreground">{prayerData.date.hijri.day}</div>
-          <div className="text-muted-foreground font-medium">{prayerData.date.hijri.month.en}</div>
-          <div className="text-muted-foreground text-sm">{prayerData.date.hijri.year} AH</div>
+          <div className="text-4xl font-black mb-1 text-foreground">{prayerData.date.hijri.day}</div>
+          <div className="text-muted-foreground text-xs font-bold uppercase tracking-widest">{prayerData.date.hijri.month.en}</div>
+          <div className="text-muted-foreground text-[10px] font-medium">{prayerData.date.hijri.year} AH</div>
         </div>
       </div>
       <div className="space-y-4">

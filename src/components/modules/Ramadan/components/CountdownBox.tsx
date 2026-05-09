@@ -7,10 +7,10 @@ interface CountdownBoxProps {
 
 const CountdownBox: React.FC<CountdownBoxProps> = ({ value, label }) => (
   <div className="flex flex-col items-center">
-    <div className="w-20 h-20 md:w-24 md:h-24 bg-primary text-primary-foreground rounded-3xl flex items-center justify-center text-3xl md:text-4xl font-black shadow-lg">
+    <div className="w-16 h-16 md:w-20 md:h-20 bg-primary text-primary-foreground rounded-2xl flex items-center justify-center text-2xl md:text-3xl font-black shadow-md">
       {value.toString().padStart(2, "0")}
     </div>
-    <span className="mt-4 text-[10px] md:text-xs font-bold uppercase tracking-widest text-muted-foreground">{label}</span>
+    <span className="mt-3 text-[9px] md:text-xs font-bold uppercase tracking-widest text-muted-foreground">{label}</span>
   </div>
 );
 

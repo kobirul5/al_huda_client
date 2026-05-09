@@ -17,16 +17,16 @@ const WeatherTab: React.FC<WeatherTabProps> = ({ weatherData, prayerData, locati
   return (
     <div className="p-10">
       <div className="flex flex-col md:flex-row justify-between items-start mb-12 gap-8">
-        <div className="flex gap-6 items-center">
-          <Sun className="w-16 h-16 text-yellow-500" />
+        <div className="flex gap-4 items-center">
+          <Sun className="w-12 h-12 text-yellow-500" />
           <div>
-            <p className="text-muted-foreground text-sm font-medium mb-1">Today Weather in</p>
-            <h3 className="text-5xl font-bold text-foreground">{location.city}</h3>
+            <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest mb-1">Today Weather in</p>
+            <h3 className="text-3xl font-black text-foreground">{location.city}</h3>
           </div>
         </div>
         <div className="text-center md:text-right w-full md:w-auto">
-          <div className="text-8xl font-bold text-foreground">{currentW?.temp_C || "32"}°</div>
-          <div className="text-muted-foreground font-medium">High: {forecast[0]?.maxtempC || "33"}° | Low: {forecast[0]?.mintempC || "22"}°</div>
+          <div className="text-5xl md:text-6xl font-black text-foreground">{currentW?.temp_C || "32"}°</div>
+          <div className="text-muted-foreground text-xs font-medium">High: {forecast[0]?.maxtempC || "33"}° | Low: {forecast[0]?.mintempC || "22"}°</div>
         </div>
       </div>
 

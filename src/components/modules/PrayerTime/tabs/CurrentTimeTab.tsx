@@ -14,16 +14,16 @@ const CurrentTimeTab: React.FC<CurrentTimeTabProps> = ({ prayerData, location, c
   return (
     <div className="p-10">
       <div className="flex flex-col md:flex-row items-center gap-6 mb-12">
-        <div className="bg-primary/20 p-6 rounded-3xl">
-          <Clock className="w-12 h-12 text-primary" />
+        <div className="bg-primary/20 p-4 rounded-2xl">
+          <Clock className="w-10 h-10 text-primary" />
         </div>
         <div>
-          <p className="text-muted-foreground text-sm font-medium mb-1">Current Time in</p>
-          <h3 className="text-4xl font-bold text-foreground">{location.city}, {location.country}</h3>
+          <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest mb-1">Current Time in</p>
+          <h3 className="text-2xl md:text-3xl font-black text-foreground">{location.city}, {location.country}</h3>
         </div>
         <div className="md:ml-auto text-center md:text-right">
-          <div className="text-6xl font-bold text-foreground">{currentTime.format("hh:mm A")}</div>
-          <div className="text-muted-foreground font-medium">{currentTime.format("MMMM DD, YYYY")}</div>
+          <div className="text-4xl font-black text-foreground">{currentTime.format("hh:mm A")}</div>
+          <div className="text-muted-foreground text-[10px] font-medium">{currentTime.format("MMMM DD, YYYY")}</div>
         </div>
       </div>
       <div className="space-y-6">
