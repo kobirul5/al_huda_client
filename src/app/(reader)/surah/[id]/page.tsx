@@ -1,11 +1,12 @@
 import ReaderContent from "@/components/modules/quran-reader/ReaderContent";
 import { getSurahDetail } from "@/components/modules/quran-reader/reader-api";
 
-export const dynamicParams = false;
+export const dynamicParams = true;
 
+// Pre-render only common surahs at build time to avoid overwhelming the API
 export function generateStaticParams() {
-  return Array.from({ length: 114 }, (_, index) => ({
-    id: String(index + 1),
+  return [1, 2, 36, 67, 114].map((id) => ({
+    id: String(id),
   }));
 }
 

@@ -12,7 +12,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1
 
 export async function getSurahs(): Promise<SurahListItem[]> {
   const response = await fetch(`${API_URL}/quran/surahs`, {
-    cache: "force-cache",
+    next: { revalidate: 3600 },
   });
 
   if (!response.ok) {
@@ -28,7 +28,7 @@ export async function getSurahDetail(
   translation: TranslationLanguage = "en"
 ): Promise<SurahDetail> {
   const response = await fetch(`${API_URL}/quran/surahs/${id}?translation=${translation}`, {
-    cache: "force-cache",
+    next: { revalidate: 3600 },
   });
 
   if (!response.ok) {
@@ -41,7 +41,7 @@ export async function getSurahDetail(
 
 export async function getParas(): Promise<ParaSummary[]> {
   const response = await fetch(`${API_URL}/quran/paras`, {
-    cache: "force-cache",
+    next: { revalidate: 3600 },
   });
 
   if (!response.ok) {
@@ -57,7 +57,7 @@ export async function getParaDetail(
   translation: TranslationLanguage = "en"
 ): Promise<ParaDetail> {
   const response = await fetch(`${API_URL}/quran/paras/${id}?translation=${translation}`, {
-    cache: "force-cache",
+    next: { revalidate: 3600 },
   });
 
   if (!response.ok) {
@@ -70,7 +70,7 @@ export async function getParaDetail(
 
 export async function getPages(): Promise<PageSummary[]> {
   const response = await fetch(`${API_URL}/quran/pages`, {
-    cache: "force-cache",
+    next: { revalidate: 3600 },
   });
 
   if (!response.ok) {
@@ -86,7 +86,7 @@ export async function getPageDetail(
   translation: TranslationLanguage = "en"
 ): Promise<PageDetail> {
   const response = await fetch(`${API_URL}/quran/pages/${id}?translation=${translation}`, {
-    cache: "force-cache",
+    next: { revalidate: 3600 },
   });
 
   if (!response.ok) {

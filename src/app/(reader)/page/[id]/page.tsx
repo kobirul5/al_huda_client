@@ -1,12 +1,10 @@
 import ReaderContent from "@/components/modules/quran-reader/ReaderContent";
 import { getPageDetail } from "@/components/modules/quran-reader/reader-api";
 
-export const dynamicParams = false;
+export const dynamicParams = true;
 
 export function generateStaticParams() {
-  return Array.from({ length: 604 }, (_, index) => ({
-    id: String(index + 1),
-  }));
+  return [{ id: "1" }];
 }
 
 export default async function QuranPageRoute({ params }: { params: Promise<{ id: string }> }) {
