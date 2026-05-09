@@ -12,11 +12,11 @@ const arabicFontOptions: Array<{
   { value: "notoNaskh", label: "Noto Naskh Arabic" },
 ];
 
-export default function ReaderSettingsPanel() {
+export default function ReaderSettingsPanel({ className }: { className?: string }) {
   const { settings, setSettings } = useReaderSettings();
 
   return (
-    <aside className="hidden min-h-0 border-l border-border bg-sidebar p-7 xl:block">
+    <aside className={className ?? "hidden min-h-0 border-l border-border bg-sidebar p-7 xl:block"}>
       <div className="mb-7 grid grid-cols-2 rounded-full bg-card p-1">
         <button className="rounded-full bg-background px-4 py-2 text-sm font-bold text-foreground">Translation</button>
         <button className="rounded-full px-4 py-2 text-sm font-medium text-muted-foreground">Reading</button>

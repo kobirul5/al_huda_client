@@ -14,6 +14,7 @@ import {
   Leaf,
   Menu,
   Search,
+  Settings,
   X,
 } from "lucide-react";
 import { arabicFontFamilyMap } from "@/components/modules/surah/VerseCard";
@@ -311,6 +312,7 @@ export default function QuranReaderShell({
   children: React.ReactNode;
 }) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   return (
     <ReaderSettingsProvider>
@@ -358,6 +360,13 @@ export default function QuranReaderShell({
             </div>
 
             <div className="flex items-center gap-3">
+              <button
+                onClick={() => setSettingsOpen(true)}
+                className="grid h-9 w-9 place-items-center rounded-full bg-card text-foreground"
+                title="Open reader settings"
+              >
+                <Settings className="h-5 w-5" />
+              </button>
               <button className="grid h-9 w-9 place-items-center rounded-full bg-card text-primary">
                 <Leaf className="h-4 w-4" />
               </button>
@@ -399,6 +408,31 @@ export default function QuranReaderShell({
               </div>
               <ReaderNavigation surahs={surahs} paras={paras} pages={pages} onNavigate={() => setMobileNavOpen(false)} />
             </aside>
+          </div>
+        ) : null}
+
+        {settingsOpen ? (
+          <div className="fixed inset-0 z-50 xl:hidden">
+            <button
+              className="absolute inset-0 bg-background/70"
+              onClick={() => setSettingsOpen(false)}
+              aria-label="Close settings panel"
+            />
+            <div className="absolute inset-y-0 right-0 flex w-[min(88vw,360px)] flex-col border-l border-border bg-sidebar shadow-2xl">
+              <div className="flex items-center justify-between border-b border-border p-4">
+                <span className="text-base font-bold text-foreground">Settings</span>
+                <button
+                  onClick={() => setSettingsOpen(false)}
+                  className="grid h-9 w-9 place-items-center rounded-full bg-card text-foreground"
+                  title="Close settings panel"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="flex-1 overflow-y-auto">
+                <ReaderSettingsPanel className="p-7" />
+              </div>
+            </div>
           </div>
         ) : null}
       </div>
