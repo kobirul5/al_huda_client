@@ -1,0 +1,40 @@
+import RamadanHero from "@/components/modules/Ramadan/RamadanHero";
+
+const apiUrl = process.env.NEXT_PUBLIC_BASE_API || "http://localhost:5000/api/v1";
+
+async function getRamadanData() {
+  const city = "Dhaka";
+  const country = "Bangladesh";
+
+  try {
+    const res = await fetch(`${apiUrl}/prayer-time?city=${city}&country=${country}`, {
+      cache: "no-store",
+    });
+
+    if (!res.ok) return null;
+
+    const jsonResponse = await res.json();
+    return jsonResponse.data;
+  } catch (error) {
+    console.error("Failed to fetch ramadan data:", error);
+    return null;
+  }
+}
+
+export default async function RamadanPage() {
+  const ramadanData = await getRamadanData();
+
+  if (!ramadanData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <p className="text-foreground text-xl font-medium">Unable to load Ramadan data. Please try again later.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <RamadanHero data={ramadanData} />
+    </div>
+  );
+}

@@ -33,7 +33,7 @@ export default function Navbar({ user }: { user: NavbarUser }) {
     { href: "/", label: "Home" },
     { href: "/surah/1", label: "Read Quran" },
     { href: "/prayer-time", label: "Prayer Time" },
-    { href: "/ramadan-2026", label: "Ramadan 2026" },
+    { href: "/ramadan", label: "Ramadan 2026" },
   ];
 
   const otherLinks = [
