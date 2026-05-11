@@ -24,7 +24,7 @@ const SurahList: React.FC<SurahListProps> = ({ initialSurahs }) => {
   }, [initialSurahs, search, filter]);
 
   return (
-    <div className="max-w-[1100px] mx-auto px-4 py-12">
+    <div className="container mx-auto px-4 py-12">
       {/* Controls */}
       <div className="flex flex-col md:flex-row gap-6 mb-10 items-center">
         <div className="relative flex-1 w-full group">
@@ -66,7 +66,7 @@ const SurahList: React.FC<SurahListProps> = ({ initialSurahs }) => {
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         {filteredSurahs.length > 0 ? (
           filteredSurahs.map((surah) => (
             <SurahCard key={surah.id} surah={surah} />

@@ -1,6 +1,8 @@
 import QuranHero from "@/components/modules/Home/QuranHero";
 import { ISurah } from "@/components/modules/Home/SurahCard";
 import SurahList from "@/components/modules/Home/SurahList";
+import DailyHadith from "@/components/modules/Home/DailyHadith";
+import FeaturesSection from "@/components/modules/Home/FeaturesSection";
 import Link from "next/link";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -33,8 +35,9 @@ export default async function Home() {
   return (
     <div className="min-h-screen bg-background">
       <QuranHero stats={stats} />
+
       
-      <main id="surahs" className="container mx-auto scroll-mt-24 pb-20">
+      <main id="surahs" className="scroll-mt-24 pb-20">
         <SurahList initialSurahs={surahs.slice(0, 20)} />
         
         {surahs.length > 20 && (
@@ -51,6 +54,9 @@ export default async function Home() {
           </div>
         )}
       </main>
+
+      <FeaturesSection />
+            <DailyHadith />
     </div>
   );
 }
