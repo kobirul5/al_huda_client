@@ -2,6 +2,7 @@ import React from "react";
 import { Sun } from "lucide-react";
 import InfoRow from "../InfoRow";
 import dayjs from "dayjs";
+import { cn } from "@/lib/utils";
 
 interface ForbiddenTimesCardProps {
   sunrise: string;
@@ -9,8 +10,8 @@ interface ForbiddenTimesCardProps {
   formatTime: (time: string) => string;
 }
 
-const ForbiddenTimesCard: React.FC<ForbiddenTimesCardProps> = ({ sunrise, sunset, formatTime }) => (
-  <div className="bg-destructive/10 border border-destructive/20 p-8 rounded-[2rem] shadow-sm">
+const ForbiddenTimesCard: React.FC<ForbiddenTimesCardProps & { className?: string }> = ({ sunrise, sunset, formatTime, className }) => (
+  <div className={cn("bg-destructive/10 border border-destructive/20 p-8 rounded-2xl shadow-sm", className)}>
     <h3 className="font-bold text-destructive mb-6 flex items-center gap-2">
       <Sun className="w-5 h-5" /> Forbidden Prayer Times
     </h3>

@@ -88,24 +88,26 @@ const PrayerHero: React.FC<PrayerHeroProps> = ({
           </div>
         </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:items-stretch">
           {/* Left Column - Sidebar */}
-          <aside className="lg:col-span-4 space-y-6">
+          <aside className="lg:col-span-4 flex flex-col gap-6">
             <UpcomingPrayerCard 
               name={nextPrayer?.name || "Fajr"} 
               timeLeft={timeLeft} 
+              className="flex-1 flex flex-col justify-center"
             />
             
             <PrayerInfoCard 
               method={prayerData.meta.method.name}
               timezone={prayerData.meta.timezone}
               date={prayerData.date.readable}
+              className="flex-1 flex flex-col justify-center"
             />
-
             <ForbiddenTimesCard 
               sunrise={prayerData.timings.Sunrise}
               sunset={prayerData.timings.Sunset}
               formatTime={formatTime}
+              className="flex-1 flex flex-col justify-center"
             />
           </aside>
 
