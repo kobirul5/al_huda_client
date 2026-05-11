@@ -1,4 +1,5 @@
 import PublicNavbar from "@/components/shared/PublicNavbar";
+import Footer from "@/components/shared/Footer";
 import { cookies } from "next/headers";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
@@ -43,6 +44,7 @@ export default async function layout({ children }: { children: React.ReactNode }
     <>
       <PublicNavbar user={user} />
       {children}
+      <Footer />
     </>
   );
 }

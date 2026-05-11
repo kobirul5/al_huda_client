@@ -1,6 +1,7 @@
 import QuranHero from "@/components/modules/Home/QuranHero";
 import { ISurah } from "@/components/modules/Home/SurahCard";
 import SurahList from "@/components/modules/Home/SurahList";
+import Link from "next/link";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function getSurahData(): Promise<{ surahs: ISurah[]; stats: any }> {
@@ -33,8 +34,22 @@ export default async function Home() {
     <div className="min-h-screen bg-background">
       <QuranHero stats={stats} />
       
-      <main id="surahs" className="container mx-auto scroll-mt-24">
-        <SurahList initialSurahs={surahs} />
+      <main id="surahs" className="container mx-auto scroll-mt-24 pb-20">
+        <SurahList initialSurahs={surahs.slice(0, 20)} />
+        
+        {surahs.length > 20 && (
+          <div className="text-center mt-10">
+            <Link 
+              href="/surah/1" 
+              className="inline-flex items-center gap-2 px-10 py-4 bg-primary text-white font-bold rounded-2xl shadow-xl shadow-primary/20 hover:bg-primary/90 hover:scale-105 active:scale-95 transition-all"
+            >
+              View All Surahs
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14m-7-7 7 7-7 7"/>
+              </svg>
+            </Link>
+          </div>
+        )}
       </main>
     </div>
   );
