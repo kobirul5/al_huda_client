@@ -1,4 +1,6 @@
 import RamadanHero from "@/components/modules/Ramadan/RamadanHero";
+import VirtuesSection from "@/components/modules/Ramadan/VirtuesSection";
+import RamadanFAQ from "@/components/modules/Ramadan/RamadanFAQ";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
 
@@ -35,6 +37,8 @@ export default async function RamadanPage() {
   return (
     <div className="min-h-screen bg-background">
       <RamadanHero data={ramadanData} />
+      <VirtuesSection />
+      <RamadanFAQ />
     </div>
   );
 }

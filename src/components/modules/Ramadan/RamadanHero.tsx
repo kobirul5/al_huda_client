@@ -32,7 +32,8 @@ const RamadanHero: React.FC<RamadanHeroProps> = ({
       }}
     >
       {/* Theme-aware overlay to ensure text readability */}
-      <div className="absolute inset-0 bg-background/60 dark:bg-background/80 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/30 to-transparent" />
+      <div className="absolute inset-0 bg-background/40 dark:bg-background/60 backdrop-blur-[2px]" />
 
       <div className="relative z-10 max-w-4xl w-full text-center">
         {/* Title Section */}
