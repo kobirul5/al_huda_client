@@ -17,14 +17,14 @@ export default function AboutUsPage() {
         />
         <div className="container relative z-10 mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-7xl font-bold text-white mb-6 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-            About Al-Huda
+            About Al Huda
           </h1>
           <p className="text-lg md:text-2xl text-white/90 max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-200 leading-relaxed font-light">
             Guided by Faith, Driven by Technology. We are dedicated to providing the most serene digital experience for your spiritual journey.
           </p>
         </div>
         {/* Subtle overlay gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/30 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-black/50 via-black/30 to-transparent" />
       </section>
 
       {/* Our Story Section */}
@@ -41,18 +41,18 @@ export default function AboutUsPage() {
               </h2>
               <div className="space-y-4 text-muted-foreground text-lg leading-relaxed">
                 <p>
-                  Al-Huda was born out of a simple vision: to make authentic Islamic knowledge and essential daily tools accessible to everyone, everywhere. In an increasingly digital world, we saw the need for a premium, distraction-free platform that seamlessly integrates into a modern lifestyle.
+                  Al Huda was born out of a simple vision: to make authentic Islamic knowledge and essential daily tools accessible to everyone, everywhere. In an increasingly digital world, we saw the need for a premium, distraction-free platform that seamlessly integrates into a modern lifestyle.
                 </p>
                 <p>
                   Our journey began with a small team of passionate developers and scholars who shared a common goal: to bridge the gap between tradition and technology. We believe that technology should serve faith, not distract from it.
                 </p>
                 <p>
-                  Today, Al-Huda serves thousands of users worldwide, providing accurate prayer times, Quranic resources, and spiritual insights, all wrapped in a beautiful, user-centric interface.
+                  Today, Al Huda serves thousands of users worldwide, providing accurate prayer times, Quranic resources, and spiritual insights, all wrapped in a beautiful, user-centric interface.
                 </p>
               </div>
             </div>
-            <div className="relative aspect-[4/3] lg:aspect-square rounded-2xl overflow-hidden shadow-2xl animate-in fade-in slide-in-from-right-12 duration-1000 group">
-               <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-primary/5 flex items-center justify-center group-hover:scale-105 transition-transform duration-700">
+            <div className="relative aspect-4/3 lg:aspect-square rounded-2xl overflow-hidden shadow-2xl animate-in fade-in slide-in-from-right-12 duration-1000 group">
+               <div className="absolute inset-0 bg-linear-to-br from-primary/30 to-primary/5 flex items-center justify-center group-hover:scale-105 transition-transform duration-700">
                   <div className="w-32 h-32 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center shadow-xl">
                     <Heart className="w-16 h-16 text-primary animate-pulse" />
                   </div>

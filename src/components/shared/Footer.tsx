@@ -89,7 +89,7 @@ export default function Footer() {
         <div className="border-t border-white/10 mt-16 pt-8 flex flex-col md:flex-row items-center justify-between gap-6 text-white/40 text-sm">
           <p>© {new Date().getFullYear()} Al-Huda. All rights reserved.</p>
           <div className="flex items-center gap-8">
-            <Link href="/privacy" className="hover:text-primary">Privacy Policy</Link>
+            <Link href="/privacy-policy" className="hover:text-primary">Privacy Policy</Link>
             <Link href="/terms" className="hover:text-primary">Terms of Service</Link>
           </div>
         </div>
