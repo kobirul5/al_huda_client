@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import HadithSidebar from "./HadithSidebar";
 import HadithCard from "./HadithCard";
 import { Loader2 } from "lucide-react";
 
@@ -33,6 +32,7 @@ export default function HadithReader({ bookName, initialHadiths }: HadithReaderP
   const [hadiths, setHadiths] = useState<Hadith[]>(initialHadiths);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [loadError, setLoadError] = useState("");
   const [hasMore, setHasMore] = useState(initialHadiths.length === 20);
   const displayName = bookNames[bookName] || bookName;
   
@@ -57,6 +57,7 @@ export default function HadithReader({ bookName, initialHadiths }: HadithReaderP
     // Reset state when bookName changes
     setHadiths(initialHadiths);
     setPage(1);
+    setLoadError("");
     setHasMore(initialHadiths.length === 20);
   }, [bookName, initialHadiths]);
 
@@ -68,6 +69,10 @@ export default function HadithReader({ bookName, initialHadiths }: HadithReaderP
       try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
         const res = await fetch(`${apiUrl}/hadith/${bookName}?page=${page}&limit=20`);
+        if (!res.ok) {
+          throw new Error("Failed to load more hadiths");
+        }
+
         const json = await res.json();
         const newHadiths = json.data || [];
         
@@ -78,6 +83,8 @@ export default function HadithReader({ bookName, initialHadiths }: HadithReaderP
         setHadiths((prev) => [...prev, ...newHadiths]);
       } catch (error) {
         console.error("Error fetching more hadiths:", error);
+        setLoadError("Could not load more hadiths right now. Please try again later.");
+        setHasMore(false);
       } finally {
         setLoading(false);
       }
@@ -87,17 +94,7 @@ export default function HadithReader({ bookName, initialHadiths }: HadithReaderP
   }, [page, bookName]);
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
-        {/* Sidebar */}
-        <aside className="lg:col-span-1">
-          <div className="sticky top-24">
-            <HadithSidebar />
-          </div>
-        </aside>
-
-        {/* Main Content */}
-        <main className="lg:col-span-3">
+    <>
           <div className="mb-8 flex flex-col items-center justify-center text-center">
             <h1 className="text-4xl font-extrabold text-foreground mb-2">{displayName}</h1>
             <p className="text-muted-foreground">Exploring the collections of prophet Muhammad (PBUH)</p>
@@ -124,10 +121,17 @@ export default function HadithReader({ bookName, initialHadiths }: HadithReaderP
             )}
             
             {loading && (
-              <div className="flex justify-center py-8">
+              <div className="flex flex-col items-center justify-center gap-3 py-8 text-muted-foreground">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <p className="text-sm font-medium">Loading more hadiths...</p>
               </div>
             )}
+
+            {loadError ? (
+              <div className="rounded-xl border border-destructive/20 bg-destructive/5 px-5 py-4 text-center text-sm font-medium text-destructive">
+                {loadError}
+              </div>
+            ) : null}
             
             {!hasMore && hadiths.length > 0 && (
               <div className="py-8 text-center text-muted-foreground italic">
@@ -135,8 +139,6 @@ export default function HadithReader({ bookName, initialHadiths }: HadithReaderP
               </div>
             )}
           </div>
-        </main>
-      </div>
-    </div>
+    </>
   );
 }
