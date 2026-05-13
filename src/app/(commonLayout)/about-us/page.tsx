@@ -129,7 +129,7 @@ export default function AboutUsPage() {
       {/* CTA Section */}
       <section className="py-24">
         <div className="container mx-auto px-4">
-          <div className="relative rounded-2xl bg-primary overflow-hidden p-12 md:p-20 text-center text-primary-foreground shadow-2xl">
+          <div className="relative rounded-2xl bg-primary/20 overflow-hidden p-12 md:p-20 text-center text-primary-foreground shadow-2xl">
             {/* Background decorative elements */}
             <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-96 h-96 bg-white/10 rounded-full blur-[100px]" />
             <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/2 w-96 h-96 bg-white/10 rounded-full blur-[100px]" />

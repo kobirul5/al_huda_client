@@ -274,7 +274,7 @@ function ReaderNavigation({
                       {item.surahs.map((surah) => (
                         <Link
                           key={surah.id}
-                          href={`/surah/${surah.id}#surah-${surah.id}-ayah-${surah.start_ayah}`}
+                          href={`/juz/${item.id}#surah-${surah.id}-ayah-${surah.start_ayah}`}
                           onClick={onNavigate}
                           className="flex items-center justify-between gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition hover:bg-accent hover:text-foreground"
                         >
