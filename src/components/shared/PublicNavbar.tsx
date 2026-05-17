@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { usePathname } from "next/navigation";
 import {
   Bookmark,
@@ -29,20 +29,24 @@ type NavbarUser = {
   profileImage?: string | null;
 } | null;
 
+function subscribeToClientMount() {
+  return () => {};
+}
+
+function getClientSnapshot() {
+  return true;
+}
+
+function getServerSnapshot() {
+  return false;
+}
+
 export default function Navbar({ user }: { user: NavbarUser }) {
   const pathname = usePathname();
-  const [mounted, setMounted] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const mounted = useSyncExternalStore(subscribeToClientMount, getClientSnapshot, getServerSnapshot);
+  const [menuState, setMenuState] = useState({ isOpen: false, pathname });
   const { theme, setTheme } = useTheme();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Close menu when pathname changes
-  useEffect(() => {
-    setIsMenuOpen(false);
-  }, [pathname]);
+  const isMenuOpen = menuState.isOpen && menuState.pathname === pathname;
 
   if (pathname.startsWith("/surah/")) {
     return null;
@@ -67,14 +71,14 @@ export default function Navbar({ user }: { user: NavbarUser }) {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
       <div className="container mx-auto flex min-h-16 items-center justify-between px-4 py-3">
         {/* Left: Logo & Hamburger */}
         <div className="flex flex-1 items-center justify-start gap-4">
           <button
             type="button"
             className="lg:hidden p-2 -ml-2 text-muted-foreground hover:text-primary transition-colors"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            onClick={() => setMenuState({ isOpen: !isMenuOpen, pathname })}
             aria-label="Toggle menu"
           >
             {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -122,6 +126,7 @@ export default function Navbar({ user }: { user: NavbarUser }) {
                   <Link
                     key={item.href}
                     href={item.href}
+                    onClick={() => setMenuState({ isOpen: false, pathname })}
                     className={cn(
                       "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors hover:bg-primary/5 hover:text-primary",
                       isActive ? "text-primary bg-primary/5" : "text-muted-foreground"
@@ -187,7 +192,7 @@ export default function Navbar({ user }: { user: NavbarUser }) {
 
       {/* Mobile Navigation Menu */}
       {isMenuOpen && (
-        <div className="lg:hidden fixed inset-x-0 top-16 bottom-0 z-50 bg-background/95 backdrop-blur-md overflow-y-auto animate-in slide-in-from-top duration-300">
+        <div className="absolute inset-x-0 top-full z-50 h-[calc(100dvh-4rem)] overflow-y-auto border-t border-border bg-background shadow-2xl lg:hidden">
           <div className="container mx-auto px-6 py-8 flex flex-col gap-6">
             <div className="flex flex-col gap-2">
               <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground px-3 mb-2">Main Menu</h3>
@@ -220,6 +225,7 @@ export default function Navbar({ user }: { user: NavbarUser }) {
                     <Link
                       key={item.href}
                       href={item.href}
+                      onClick={() => setMenuState({ isOpen: false, pathname })}
                       className={cn(
                         "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all",
                         isActive 
