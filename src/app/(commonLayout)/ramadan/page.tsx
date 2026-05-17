@@ -26,14 +26,6 @@ async function getRamadanData() {
 export default async function RamadanPage() {
   const ramadanData = await getRamadanData();
 
-  if (!ramadanData) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <p className="text-foreground text-xl font-medium">Unable to load Ramadan data. Please try again later.</p>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-background">
       <RamadanHero data={ramadanData} />

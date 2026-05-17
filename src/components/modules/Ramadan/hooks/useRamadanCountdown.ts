@@ -4,6 +4,20 @@ import duration from "dayjs/plugin/duration";
 
 dayjs.extend(duration);
 
+const ramadanStartDates = [
+  "2026-02-18",
+  "2027-02-08",
+  "2028-01-28",
+  "2029-01-16",
+  "2030-01-05",
+  "2030-12-26",
+];
+
+export const getNextRamadanStartDate = () => {
+  const today = dayjs().startOf("day");
+  return ramadanStartDates.find((date) => dayjs(date).isAfter(today)) || ramadanStartDates[ramadanStartDates.length - 1];
+};
+
 export const useRamadanCountdown = (startDate: string) => {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
@@ -12,9 +26,9 @@ export const useRamadanCountdown = (startDate: string) => {
     seconds: 0
   });
 
-  const targetDate = dayjs(startDate);
-
   useEffect(() => {
+    const targetDate = dayjs(startDate);
+
     const calculateTimeLeft = () => {
       const now = dayjs();
       const diff = targetDate.diff(now);
@@ -35,7 +49,7 @@ export const useRamadanCountdown = (startDate: string) => {
     calculateTimeLeft();
     const timer = setInterval(calculateTimeLeft, 1000);
     return () => clearInterval(timer);
-  }, [targetDate]);
+  }, [startDate]);
 
   return timeLeft;
 };
