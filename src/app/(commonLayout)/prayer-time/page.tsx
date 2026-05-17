@@ -1,8 +1,12 @@
 import PrayerHero from "@/components/modules/PrayerTime/PrayerHero";
 
-const FETCH_TIMEOUT = 15000; // 15 seconds
+const FETCH_TIMEOUT = 8000; // 8 seconds
 const MAX_RETRIES = 2;
 const RETRY_DELAY = 1000; // 1 second
+
+function isLocalhostApiInProduction(url: string) {
+  return process.env.NODE_ENV === "production" && /^https?:\/\/(localhost|127\.0\.0\.1)(:|\/|$)/.test(url);
+}
 
 async function retryFetch(
   url: string,
@@ -50,6 +54,7 @@ async function retryFetch(
         await new Promise(resolve => setTimeout(resolve, waitTime));
       }
     } catch (err) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       lastError = err instanceof Error ? err : new Error(String(err));
     }
   }
@@ -68,7 +73,7 @@ async function getPrayerTimeData(
   const fallbackUrl = `https://api.aladhan.com/v1/timingsByCity?city=${cityParam}&country=${countryParam}&method=1`;
 
   try {
-    const res = await retryFetch(url);
+    const res = isLocalhostApiInProduction(apiUrl) ? null : await retryFetch(url);
 
     if (res) {
       const jsonResponse = await res.json();
