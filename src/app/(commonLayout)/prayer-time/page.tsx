@@ -62,26 +62,42 @@ async function getPrayerTimeData(
   country: string = "Bangladesh"
 ) {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
-  const url = `${apiUrl}/prayer-time?city=${encodeURIComponent(city)}&country=${encodeURIComponent(
-    country
-  )}`;
+  const cityParam = encodeURIComponent(city);
+  const countryParam = encodeURIComponent(country);
+  const url = `${apiUrl}/prayer-time?city=${cityParam}&country=${countryParam}`;
+  const fallbackUrl = `https://api.aladhan.com/v1/timingsByCity?city=${cityParam}&country=${countryParam}&method=1`;
 
   try {
     const res = await retryFetch(url);
 
-    if (!res) {
-      console.error("Failed to fetch prayer times after retries", { city, country });
-      return null;
-    }
+    if (res) {
+      const jsonResponse = await res.json();
 
-    const jsonResponse = await res.json();
+      if (jsonResponse.success && jsonResponse.data) {
+        return jsonResponse.data;
+      }
 
-    if (!jsonResponse.success || !jsonResponse.data) {
       console.error("Invalid prayer times response", { jsonResponse });
+    }
+
+    console.error("Backend prayer-time API failed, trying direct fallback", { city, country });
+
+    const fallbackRes = await retryFetch(fallbackUrl, 1);
+    if (!fallbackRes) {
+      console.error("Failed to fetch prayer times from fallback API", { city, country });
       return null;
     }
 
-    return jsonResponse.data;
+    const fallbackJson = await fallbackRes.json();
+    if (fallbackJson.code !== 200 || !fallbackJson.data) {
+      console.error("Invalid fallback prayer times response", { fallbackJson });
+      return null;
+    }
+
+    return {
+      prayer: fallbackJson.data,
+      weather: null,
+    };
   } catch (error) {
     console.error("Error fetching prayer times:", error);
     return null;
