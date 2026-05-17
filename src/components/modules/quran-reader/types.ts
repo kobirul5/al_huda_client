@@ -17,7 +17,7 @@ export interface SurahListItem {
   id: number;
   name: string;
   transliteration: string;
-  type: string;
+  type: "meccan" | "medinan";
   total_verses: number;
 }
 
