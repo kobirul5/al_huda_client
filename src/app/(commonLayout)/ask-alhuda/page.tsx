@@ -23,11 +23,21 @@ import {
   Scale,
   MessageSquare,
   ChevronRight,
-  AlertCircle
+  AlertCircle,
+  LogIn,
+  UserCheck,
+  Lock
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { 
+  askAlHudaAI, 
+  getAiHistory, 
+  deleteAiHistoryItem, 
+  checkAiAuth 
+} from "@/services/ai";
 
 interface IReference {
   type: "quran" | "hadith";
@@ -38,11 +48,13 @@ interface IReference {
 }
 
 interface IAISuggestionResponse {
+  id?: string;
   prompt: string;
   suggestion: string;
   references: IReference[];
   category: string;
-  createdAt: string;
+  language?: string;
+  createdAt: string | Date;
 }
 
 const SUGGESTED_PROMPTS = [
@@ -93,21 +105,35 @@ export default function AskAlHudaPage() {
   const [error, setError] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<number | null>(null);
   const [copiedFull, setCopiedFull] = useState(false);
-  const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const [referenceFilter, setReferenceFilter] = useState<"all" | "quran" | "hadith">("all");
 
-  // Load history from localStorage safely
+  // Authentication & DB Search History States
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null); // null means loading
+  const [historyData, setHistoryData] = useState<IAISuggestionResponse[]>([]);
+  const [isDeletingId, setIsDeletingId] = useState<string | null>(null);
+
+  // Initialize Authentication Check and Fetch History from DB
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("alhuda_ai_history");
-      if (stored) {
-        try {
-          setSearchHistory(JSON.parse(stored));
-        } catch (e) {
-          console.error("Failed to parse history", e);
+    const initAuthAndHistory = async () => {
+      try {
+        const authCheck = await checkAiAuth();
+        if (!authCheck.success) {
+          setIsAuthenticated(false);
+          return;
         }
+        setIsAuthenticated(true);
+        
+        // Fetch Search History directly from DB
+        const response = await getAiHistory();
+        if (response.success && Array.isArray(response.data)) {
+          setHistoryData(response.data);
+        }
+      } catch (err) {
+        console.error("Auth and history init error:", err);
+        setIsAuthenticated(false);
       }
-    }
+    };
+    initAuthAndHistory();
   }, []);
 
   // Cycle loading steps
@@ -122,31 +148,6 @@ export default function AskAlHudaPage() {
     return () => clearInterval(interval);
   }, [isLoading]);
 
-  const saveToHistory = (newPrompt: string) => {
-    if (!newPrompt.trim()) return;
-    const updated = [newPrompt, ...searchHistory.filter(p => p !== newPrompt)].slice(0, 5);
-    setSearchHistory(updated);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("alhuda_ai_history", JSON.stringify(updated));
-    }
-  };
-
-  const deleteHistoryItem = (e: React.MouseEvent, itemToDelete: string) => {
-    e.stopPropagation(); // Avoid triggering search
-    const updated = searchHistory.filter(p => p !== itemToDelete);
-    setSearchHistory(updated);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("alhuda_ai_history", JSON.stringify(updated));
-    }
-  };
-
-  const clearHistory = () => {
-    setSearchHistory([]);
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("alhuda_ai_history");
-    }
-  };
-
   const handleAsk = async (e?: React.FormEvent, customPrompt?: string) => {
     if (e) e.preventDefault();
     
@@ -157,34 +158,56 @@ export default function AskAlHudaPage() {
     setError(null);
     setResult(null);
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
-
     try {
-      const response = await fetch(`${apiUrl}/ai/suggestion`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          prompt: queryPrompt,
-          category,
-          language
-        })
-      });
+      const response = await askAlHudaAI(queryPrompt, category, language);
 
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(data.message || "Failed to retrieve guidance from OpenRouter.");
+      if (!response.success) {
+        throw new Error(response.message || "Failed to retrieve guidance.");
       }
 
-      setResult(data.data);
-      saveToHistory(queryPrompt);
+      setResult(response.data);
+      
+      // Auto refresh search history from DB to show the new item immediately
+      const histResponse = await getAiHistory();
+      if (histResponse.success && Array.isArray(histResponse.data)) {
+        setHistoryData(histResponse.data);
+      }
     } catch (err: any) {
       console.error("AI Request error:", err);
       setError(err.message || "Something went wrong. Please check your connection or try again.");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Load a saved query response from search history instantly without calling API
+  const handleLoadHistoryItem = (item: IAISuggestionResponse) => {
+    setPrompt(item.prompt);
+    setCategory(item.category as any);
+    setLanguage(item.language as any || "en");
+    setResult(item);
+    setError(null);
+  };
+
+  const handleDeleteHistoryItem = async (e: React.MouseEvent, historyId: string) => {
+    e.stopPropagation(); // Stop parent click trigger
+    setIsDeletingId(historyId);
+
+    try {
+      const response = await deleteAiHistoryItem(historyId);
+      if (response.success) {
+        // Filter out deleted item from history list state
+        setHistoryData((prev) => prev.filter((item) => item.id !== historyId));
+        
+        // If current result belongs to deleted item, clear results
+        if (result && result.id === historyId) {
+          handleReset();
+        }
+      }
+    } catch (err) {
+      console.error("Failed to delete history item:", err);
+    } finally {
+      setIsDeletingId(null);
     }
   };
 
@@ -224,6 +247,71 @@ export default function AskAlHudaPage() {
     return ref.type === referenceFilter;
   }) || [];
 
+  // 1. LOADING AUTH STATE SKELETON
+  if (isAuthenticated === null) {
+    return (
+      <main className="min-h-screen bg-background relative overflow-hidden pb-24 flex items-center justify-center">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,oklch(58%_0.14_150_/_0.03)_1px,transparent_1px),linear-gradient(to_bottom,oklch(58%_0.14_150_/_0.03)_1px,transparent_1px)] bg-[size:24px_24px] -z-10" />
+        <div className="flex flex-col items-center gap-4 text-center">
+          <Loader2 className="w-10 h-10 animate-spin text-primary" />
+          <p className="text-xs text-muted-foreground font-semibold uppercase tracking-widest animate-pulse">
+            Authenticating AI Studio Workspace...
+          </p>
+        </div>
+      </main>
+    );
+  }
+
+  // 2. UNAUTHORIZED / LOGIN REQUIRED STATE
+  if (isAuthenticated === false) {
+    return (
+      <main className="min-h-screen bg-background relative overflow-hidden py-20 px-4 flex items-center justify-center">
+        {/* World-Class Background Grids & Glows */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,oklch(58%_0.14_150_/_0.03)_1px,transparent_1px),linear-gradient(to_bottom,oklch(58%_0.14_150_/_0.03)_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_80%,transparent_100%)] -z-10" />
+        <div className="absolute top-1/4 left-1/4 w-[350px] h-[350px] bg-primary/10 rounded-full blur-[100px] -z-10 animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-[350px] h-[350px] bg-emerald-500/5 rounded-full blur-[100px] -z-10 animate-pulse" />
+
+        <div className="max-w-md w-full bg-card/70 border border-border rounded-2xl p-8 shadow-2xl backdrop-blur-xl text-center relative overflow-hidden group">
+          <div className="absolute top-0 left-0 w-full h-[4px] bg-gradient-to-r from-emerald-500 via-primary to-emerald-600" />
+          <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full blur-xl -mr-4 -mt-4" />
+          
+          <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-6 shadow-inner relative">
+            <Lock className="w-8 h-8 text-primary" />
+            <Sparkles className="w-4 h-4 text-primary absolute -top-1 -right-1 animate-pulse" />
+          </div>
+
+          <h1 className="text-xl font-extrabold tracking-tight text-foreground mb-2">
+            Authentication Required
+          </h1>
+          <p className="text-xs text-primary font-bold uppercase tracking-widest mb-4">
+            Al-Huda AI Scholar Workspace
+          </p>
+
+          <p className="text-sm text-muted-foreground leading-relaxed mb-8">
+            The Islamic AI Studio is a premium scholar workspace reserved for registered members. 
+            Logging in protects your spiritual queries and securely saves your Shariah suggestions directly to a personal search history database.
+          </p>
+
+          <div className="flex flex-col gap-3">
+            <Link href="/login" passHref className="w-full">
+              <Button className="w-full rounded-full h-11 font-bold gap-2 shadow-lg shadow-primary/10 hover:shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200">
+                <LogIn className="w-4 h-4" />
+                <span>Log In to Continue</span>
+              </Button>
+            </Link>
+
+            <Link href="/register" passHref className="w-full">
+              <Button variant="outline" className="w-full rounded-full h-11 font-bold text-muted-foreground hover:text-foreground hover:bg-muted/50 border-border/80 transition-all duration-200">
+                <span>Create a Free Account</span>
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  // 3. AUTHORIZED / MAIN WORKSPACE STATE
   return (
     <main className="min-h-screen bg-background relative overflow-hidden pb-24">
       {/* Decorative World-Class Background Grids & Blobs */}
@@ -361,50 +449,55 @@ export default function AskAlHudaPage() {
               </div>
             </div>
 
-            {/* Search History Panel */}
+            {/* Database Search History Panel */}
             <div className="bg-card/75 border border-border rounded-2xl p-6 shadow-xl shadow-black/5 backdrop-blur-xl">
               <div className="flex items-center justify-between mb-4 border-b border-border/50 pb-2">
                 <h3 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80 flex items-center gap-2">
                   <History className="w-3.5 h-3.5 text-primary" />
-                  <span>{language === "en" ? "Recent Queries" : "সাম্প্রতিক অনুসন্ধান"}</span>
+                  <span>{language === "en" ? "Saved AI History" : "সংরক্ষিত এআই ইতিহাস"}</span>
                 </h3>
-                {searchHistory.length > 0 && (
-                  <button 
-                    onClick={clearHistory}
-                    className="text-[10px] font-bold text-destructive hover:text-destructive/80 transition-colors flex items-center gap-1"
-                    title="Clear history"
-                  >
-                    <Trash2 className="w-3 h-3" />
-                    <span>Clear All</span>
-                  </button>
-                )}
+                <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full border border-primary/20 font-extrabold uppercase">
+                  Database
+                </span>
               </div>
 
-              {searchHistory.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-6 text-center">
-                  <History className="w-8 h-8 text-muted-foreground/20 mb-2" />
-                  <p className="text-xs text-muted-foreground/60 italic leading-relaxed">
-                    {language === "en" ? "Your recent queries will appear here." : "আপনার সাম্প্রতিক প্রশ্নগুলো এখানে থাকবে।"}
+              {historyData.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-8 text-center">
+                  <UserCheck className="w-8 h-8 text-muted-foreground/20 mb-2" />
+                  <p className="text-xs text-muted-foreground/60 italic leading-relaxed px-4">
+                    {language === "en" 
+                      ? "Shariah consultations you search will be saved in your database." 
+                      : "আপনার করা সকল শরীয়াহ আলোচনা ডাটাবেজে সংরক্ষণ করা হবে।"}
                   </p>
                 </div>
               ) : (
-                <div className="flex flex-col gap-2">
-                  {searchHistory.map((hist, idx) => (
+                <div className="flex flex-col gap-2 max-h-[300px] overflow-y-auto pr-1 scrollbar-thin">
+                  {historyData.map((item) => (
                     <div
-                      key={idx}
-                      onClick={() => {
-                        setPrompt(hist);
-                        handleAsk(undefined, hist);
-                      }}
-                      className="w-full flex items-center justify-between text-xs text-muted-foreground hover:text-primary hover:bg-primary/[0.02] px-3 py-2.5 rounded-xl border border-border/30 hover:border-primary/20 text-left transition-all duration-150 cursor-pointer group/hist"
+                      key={item.id}
+                      onClick={() => handleLoadHistoryItem(item)}
+                      className={cn(
+                        "w-full flex items-center justify-between text-xs text-muted-foreground hover:text-primary hover:bg-primary/[0.02] px-3.5 py-3 rounded-xl border transition-all duration-200 cursor-pointer group/hist relative",
+                        result && result.id === item.id 
+                          ? "bg-primary/[0.03] border-primary/35 text-foreground font-semibold" 
+                          : "border-border/40 hover:border-primary/20"
+                      )}
                     >
-                      <span className="truncate pr-3 font-medium">{hist}</span>
+                      {result && result.id === item.id && (
+                        <div className="absolute top-0 left-0 w-1 h-full bg-primary rounded-l-xl" />
+                      )}
+                      <span className="truncate pr-3 font-medium max-w-[85%]">{item.prompt}</span>
                       <button
-                        onClick={(e) => deleteHistoryItem(e, hist)}
-                        className="opacity-0 group-hover/hist:opacity-100 p-1 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all shrink-0"
-                        title="Delete query"
+                        onClick={(e) => handleDeleteHistoryItem(e, item.id || "")}
+                        disabled={isDeletingId === item.id}
+                        className="opacity-0 group-hover/hist:opacity-100 p-1.5 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all shrink-0"
+                        title="Delete query from database"
                       >
-                        <Trash2 className="w-3 h-3" />
+                        {isDeletingId === item.id ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        ) : (
+                          <Trash2 className="w-3.5 h-3.5" />
+                        )}
                       </button>
                     </div>
                   ))}
