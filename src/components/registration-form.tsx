@@ -63,7 +63,7 @@ export default function RegistrationForm() {
                 name="firstName"
                 placeholder="John"
                 disabled={isPending}
-                className="h-12 rounded-xl border-border bg-white transition-all focus:border-primary/50 focus:ring-primary/20"
+                className="h-12 rounded-xl border-border bg-white dark:bg-muted/30 transition-all focus:border-primary/50 focus:ring-primary/20"
               />
             </FieldContent>
             {getFieldError("firstName") && (
@@ -80,7 +80,7 @@ export default function RegistrationForm() {
                 name="lastName"
                 placeholder="Doe"
                 disabled={isPending}
-                className="h-12 rounded-xl border-border bg-white transition-all focus:border-primary/50 focus:ring-primary/20"
+                className="h-12 rounded-xl border-border bg-white dark:bg-muted/30 transition-all focus:border-primary/50 focus:ring-primary/20"
               />
             </FieldContent>
             {getFieldError("lastName") && (
@@ -101,7 +101,7 @@ export default function RegistrationForm() {
               type="email"
               placeholder="john@example.com"
               disabled={isPending}
-              className="h-12 rounded-xl border-border bg-white transition-all focus:border-primary/50 focus:ring-primary/20"
+              className="h-12 rounded-xl border-border bg-white dark:bg-muted/30 transition-all focus:border-primary/50 focus:ring-primary/20"
             />
           </FieldContent>
           {getFieldError("email") && (
@@ -118,7 +118,7 @@ export default function RegistrationForm() {
               name="location"
               placeholder="123 Main St, City"
               disabled={isPending}
-              className="h-12 rounded-xl border-border bg-white transition-all focus:border-primary/50 focus:ring-primary/20"
+              className="h-12 rounded-xl border-border bg-white dark:bg-muted/30 transition-all focus:border-primary/50 focus:ring-primary/20"
             />
           </FieldContent>
           {getFieldError("location") && (
@@ -140,7 +140,7 @@ export default function RegistrationForm() {
                   type={showPassword ? "text" : "password"}
                   placeholder="********"
                   disabled={isPending}
-                  className="h-12 rounded-xl border-border bg-white pr-12 transition-all focus:border-primary/50 focus:ring-primary/20"
+                  className="h-12 rounded-xl border-border bg-white dark:bg-muted/30 pr-12 transition-all focus:border-primary/50 focus:ring-primary/20"
                 />
                 <button
                   type="button"
@@ -171,7 +171,7 @@ export default function RegistrationForm() {
                   type={showConfirmPassword ? "text" : "password"}
                   placeholder="********"
                   disabled={isPending}
-                  className="h-12 rounded-xl border-border bg-white pr-12 transition-all focus:border-primary/50 focus:ring-primary/20"
+                  className="h-12 rounded-xl border-border bg-white dark:bg-muted/30 pr-12 transition-all focus:border-primary/50 focus:ring-primary/20"
                 />
                 <button
                   type="button"

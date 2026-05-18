@@ -3,9 +3,9 @@ import Link from "next/link";
 
 export default function LoginPage() {
   return (
-    <main className="min-h-screen bg-[linear-gradient(180deg,#f8fcf8_0%,#eef7f0_100%)] px-4 py-10 sm:px-6">
+    <main className="min-h-screen bg-[linear-gradient(180deg,#f8fcf8_0%,#eef7f0_100%)] dark:bg-[linear-gradient(180deg,#07150c_0%,#020804_100%)] px-4 py-10 sm:px-6">
       <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-xl items-center justify-center">
-        <div className="w-full rounded-[2rem] border border-primary/10 bg-white p-6 shadow-[0_20px_60px_-35px_rgba(24,78,48,0.3)] sm:p-8">
+        <div className="w-full rounded-[2rem] border border-primary/10 dark:border-primary/20 bg-white dark:bg-card/75 dark:backdrop-blur-xl p-6 shadow-[0_20px_60px_-35px_rgba(24,78,48,0.3)] dark:shadow-[0_20px_60px_-35px_rgba(0,0,0,0.8)] sm:p-8">
           <div className="space-y-6">
             <div className="space-y-3">
               <Link

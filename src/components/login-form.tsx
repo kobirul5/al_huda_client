@@ -109,7 +109,7 @@ export default function LoginForm({ quickLoginUser }: QuickLoginProps) {
                 required
                 placeholder="name@example.com"
                 disabled={isPending}
-                className="h-12 rounded-xl border-border bg-white transition-all focus-visible:border-primary/50 focus-visible:ring-primary/20"
+                className="h-12 rounded-xl border-border bg-white dark:bg-muted/30 transition-all focus-visible:border-primary/50 focus-visible:ring-primary/20"
               />
             </FieldContent>
             <FieldError errors={getErrors("email")} />
@@ -130,7 +130,7 @@ export default function LoginForm({ quickLoginUser }: QuickLoginProps) {
                   required
                   placeholder="********"
                   disabled={isPending}
-                  className="h-12 rounded-xl border-border bg-white pr-12 transition-all focus-visible:border-primary/50 focus-visible:ring-primary/20"
+                  className="h-12 rounded-xl border-border bg-white dark:bg-muted/30 pr-12 transition-all focus-visible:border-primary/50 focus-visible:ring-primary/20"
                 />
                 <button
                   type="button"
