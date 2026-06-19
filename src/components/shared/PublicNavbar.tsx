@@ -57,7 +57,7 @@ export default function Navbar({ user }: { user: NavbarUser }) {
     { href: "/surah/1", label: "Read Quran" },
     { href: "/prayer-time", label: "Prayer Time" },
     { href: "/ramadan", label: "Ramadan 2026" },
-    { href: "/ask-alhuda", label: "Al-Huda AI" },
+    { href: "/ask-alhuda", label: "Chat AI" },
   ];
 
   const otherLinks = [
