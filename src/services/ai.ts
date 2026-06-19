@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 
 import { cookies } from "next/headers";
@@ -23,6 +24,7 @@ export async function askAlHudaAI(
   prompt: string,
   category: string,
   language: string
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> {
   const accessToken = await getAccessToken();
 
