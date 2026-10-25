@@ -11,7 +11,7 @@ import {
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
 const QURAN_CDN_URL = "https://cdn.jsdelivr.net/npm/quran-json@3.1.2/dist";
 const QURAN_META_URL = "https://api.alquran.cloud/v1/meta";
-const FETCH_TIMEOUT = 8000;
+const FETCH_TIMEOUT = 5000; // reduced from 8s → 5s
 const TOTAL_QURAN_PAGES = 604;
 
 interface PageBoundary {
@@ -246,17 +246,17 @@ async function getPageDetailFromCdn(
     return null;
   }
 
-  const surahs = await getSurahsFromCdn();
-  if (surahs.length === 0) {
-    return null;
-  }
+  // ✅ Fetch surahs + boundaries in parallel instead of sequentially
+  const [surahs, boundaries] = await Promise.all([
+    getSurahsFromCdn(),
+    getSurahsFromCdn().then((s) => getPageBoundariesFromCdn(s)),
+  ]);
 
-  const boundaries = await getPageBoundariesFromCdn(surahs);
+  // Use the real boundaries (which were calculated from their own getSurahs call)
+  if (surahs.length === 0 || boundaries.length === 0) return null;
+
   const boundary = boundaries.find((page) => page.id === pageId);
-
-  if (!boundary) {
-    return null;
-  }
+  if (!boundary) return null;
 
   const pageSummary = getPageSummaryFromBoundary(boundary, surahs);
   const pageSurahs = await Promise.all(
@@ -323,16 +323,14 @@ async function getParaDetailFromCdn(
   }
 
   const surahs = await getSurahsFromCdn();
-  if (surahs.length === 0) {
-    return null;
-  }
+  if (surahs.length === 0) return null;
 
   const boundary = juzBoundaries.find((juz) => juz.id === paraId);
-  if (!boundary) {
-    return null;
-  }
+  if (!boundary) return null;
 
   const paraSummary = getParaSummaryFromBoundary(boundary, surahs);
+
+  // ✅ All surah details fetch in parallel
   const paraSurahs = await Promise.all(
     paraSummary.surahs.map(async (surah) => {
       const surahDetail = await getSurahDetailFromCdn(String(surah.id), translation);

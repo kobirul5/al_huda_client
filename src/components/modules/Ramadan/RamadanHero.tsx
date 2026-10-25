@@ -26,7 +26,7 @@ const RamadanHero: React.FC<RamadanHeroProps> = ({
     <section 
       className="relative min-h-[90vh] flex flex-col items-center justify-center py-20 px-6 overflow-hidden"
       style={{
-        backgroundImage: 'url("/assets/banner.png")',
+        backgroundImage: 'url("/assets/banner.webp")',
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}

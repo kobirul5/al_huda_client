@@ -15,7 +15,7 @@ const QuranHero: React.FC<QuranHeroProps> = ({ stats }) => {
   return (
     <section
       className="relative text-center px-6 pt-32 pb-28 min-h-[80vh] flex items-center justify-center overflow-hidden bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: "url('/assets/banner.png')" }}
+      style={{ backgroundImage: "url('/assets/banner.webp')" }}
     >
       {/* Dark Overlay for contrast */}
       <div className="absolute inset-0 bg-black/60 z-0" />

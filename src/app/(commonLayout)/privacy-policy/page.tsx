@@ -68,7 +68,7 @@ export default function PrivacyPolicyPage() {
     <main className="min-h-screen bg-background text-foreground">
       <section className="relative flex h-[46vh] min-h-90 w-full items-center justify-center overflow-hidden">
         <Image
-          src="/assets/copyright-bg.png"
+          src="/assets/copyright-bg.webp"
           alt="Al-Huda privacy policy"
           fill
           className="object-cover brightness-[0.62]"

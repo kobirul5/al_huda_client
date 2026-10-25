@@ -9,7 +9,7 @@ export default function CopyrightPage() {
       {/* Hero Section */}
       <section className="relative h-[45vh] w-full overflow-hidden flex items-center justify-center">
         <Image
-          src="/assets/copyright-bg.png"
+          src="/assets/copyright-bg.webp"
           alt="Copyright Al-Huda"
           fill
           className="object-cover brightness-75"

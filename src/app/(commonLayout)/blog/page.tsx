@@ -15,7 +15,7 @@ const BLOG_POSTS = [
     category: "Ramadan",
     author: "Sheikh Ahmed",
     date: "March 10, 2026",
-    image: "/assets/blog-ramadan.png",
+    image: "/assets/blog-ramadan.webp",
   },
   {
     id: 2,
@@ -24,7 +24,7 @@ const BLOG_POSTS = [
     category: "Spirituality",
     author: "Zainab Ali",
     date: "March 05, 2026",
-    image: "/assets/blog-prayer.png",
+    image: "/assets/blog-prayer.webp",
   },
   {
     id: 3,
@@ -33,7 +33,7 @@ const BLOG_POSTS = [
     category: "Technology",
     author: "Dr. Omar",
     date: "Feb 28, 2026",
-    image: "/assets/blog-hero.png",
+    image: "/assets/blog-hero.webp",
   },
   {
     id: 4,
@@ -42,7 +42,7 @@ const BLOG_POSTS = [
     category: "Community",
     author: "Mariam Khan",
     date: "Feb 20, 2026",
-    image: "/assets/about-us-hero.png",
+    image: "/assets/about-us-hero.webp",
   }
 ];
 
@@ -64,7 +64,7 @@ export default function BlogPage() {
       {/* Hero Section */}
       <section className="relative h-[45vh] w-full overflow-hidden flex items-center justify-center">
         <Image
-          src="/assets/blog-hero.png"
+          src="/assets/blog-hero.webp"
           alt="Al-Huda Blog"
           fill
           className="object-cover brightness-75"

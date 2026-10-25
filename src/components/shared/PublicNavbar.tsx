@@ -86,7 +86,7 @@ export default function Navbar({ user }: { user: NavbarUser }) {
           </button>
 
           <Link href="/" className="flex items-center gap-2">
-            <Image src="/assets/logo.png" alt="Al-Huda Logo" width={100} height={40} className="h-10 w-auto" />
+            <Image src="/assets/logo.webp" alt="Al-Huda Logo" width={100} height={40} className="h-10 w-auto" priority />
             <span className="text-lg font-semibold text-primary hidden sm:inline-block">Al-Huda</span>
           </Link>
         </div>

@@ -8,7 +8,7 @@ export default function Footer() {
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 z-0">
         <Image 
-          src="/assets/footer.png" 
+          src="/assets/footer.webp" 
           alt="Footer Background" 
           fill 
           className="object-cover brightness-[0.4]"

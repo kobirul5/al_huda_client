@@ -1,8 +1,8 @@
 import PrayerHero from "@/components/modules/PrayerTime/PrayerHero";
 
-const FETCH_TIMEOUT = 8000; // 8 seconds
-const MAX_RETRIES = 2;
-const RETRY_DELAY = 1000; // 1 second
+const FETCH_TIMEOUT = 5000; // reduced from 8s → 5s
+const MAX_RETRIES = 1;    // reduced from 2 → 1
+const RETRY_DELAY = 500;  // reduced from 1s → 500ms
 
 function isLocalhostApiInProduction(url: string) {
   return process.env.NODE_ENV === "production" && /^https?:\/\/(localhost|127\.0\.0\.1)(:|\/|$)/.test(url);
@@ -73,36 +73,32 @@ async function getPrayerTimeData(
   const fallbackUrl = `https://api.aladhan.com/v1/timingsByCity?city=${cityParam}&country=${countryParam}&method=1`;
 
   try {
-    const res = isLocalhostApiInProduction(apiUrl) ? null : await retryFetch(url);
+    // ─── Backend + fallback run in parallel; first valid result wins ──────────
+    const backendFetch = isLocalhostApiInProduction(apiUrl)
+      ? Promise.resolve(null)
+      : retryFetch(url).then(async (res) => {
+          if (!res) return null;
+          const json = await res.json();
+          return json.success && json.data ? json.data : null;
+        }).catch(() => null);
 
-    if (res) {
-      const jsonResponse = await res.json();
+    const directFetch = retryFetch(fallbackUrl, 0).then(async (res) => {
+      if (!res) return null;
+      const json = await res.json();
+      if (json.code !== 200 || !json.data) return null;
+      return { prayer: json.data, weather: null };
+    }).catch(() => null);
 
-      if (jsonResponse.success && jsonResponse.data) {
-        return jsonResponse.data;
-      }
+    // Wait for backend first (it includes weather); if it takes too long, use direct
+    const backendResult = await backendFetch;
+    if (backendResult) return backendResult;
 
-      console.error("Invalid prayer times response", { jsonResponse });
-    }
+    console.warn("Backend prayer-time API failed, using direct fallback", { city, country });
+    const directResult = await directFetch;
+    if (directResult) return directResult;
 
-    console.error("Backend prayer-time API failed, trying direct fallback", { city, country });
-
-    const fallbackRes = await retryFetch(fallbackUrl, 1);
-    if (!fallbackRes) {
-      console.error("Failed to fetch prayer times from fallback API", { city, country });
-      return null;
-    }
-
-    const fallbackJson = await fallbackRes.json();
-    if (fallbackJson.code !== 200 || !fallbackJson.data) {
-      console.error("Invalid fallback prayer times response", { fallbackJson });
-      return null;
-    }
-
-    return {
-      prayer: fallbackJson.data,
-      weather: null,
-    };
+    console.error("Both prayer-time sources failed", { city, country });
+    return null;
   } catch (error) {
     console.error("Error fetching prayer times:", error);
     return null;

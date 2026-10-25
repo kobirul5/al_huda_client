@@ -9,7 +9,7 @@ export default function AboutUsPage() {
       {/* Hero Section */}
       <section className="relative h-[60vh] w-full overflow-hidden flex items-center justify-center">
         <Image
-          src="/assets/about-us-hero.png"
+          src="/assets/about-us-hero.webp"
           alt="About Al-Huda"
           fill
           className="object-cover brightness-50"

@@ -8,7 +8,7 @@ export default function ContactUsPage() {
       {/* Hero Section */}
       <section className="relative h-[45vh] w-full overflow-hidden flex items-center justify-center">
         <Image
-          src="/assets/contact-us-bg.png"
+          src="/assets/contact-us-bg.webp"
           alt="Contact Al-Huda"
           fill
           className="object-cover brightness-75"

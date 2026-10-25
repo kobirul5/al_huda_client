@@ -28,7 +28,7 @@ export default function RamadanFAQ() {
           {/* Image Side - Visible on Desktop */}
           <div className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl hidden lg:block animate-in fade-in slide-in-from-left-12 duration-1000">
             <Image 
-              src="/assets/blog-ramadan.png" 
+              src="/assets/blog-ramadan.webp" 
               alt="Ramadan FAQ" 
               fill 
               className="object-cover"

@@ -65,7 +65,7 @@ const PrayerHero: React.FC<PrayerHeroProps> = ({
     <section 
       className="relative min-h-screen flex flex-col items-center justify-center py-20 px-6 overflow-hidden"
       style={{
-        backgroundImage: 'url("/assets/banner.png")',
+        backgroundImage: 'url("/assets/banner.webp")',
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
