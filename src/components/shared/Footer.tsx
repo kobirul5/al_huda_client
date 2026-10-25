@@ -1,8 +1,18 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { Mail, Phone, MapPin, Facebook, Twitter, Instagram } from "lucide-react";
 
 export default function Footer() {
+  const pathname = usePathname();
+
+  // Hide footer on AI Chat page and Surah reading pages
+  if (pathname?.startsWith("/ask-alhuda") || pathname?.startsWith("/surah/")) {
+    return null;
+  }
+
   return (
     <footer className="relative bg-black text-white mt-20 overflow-hidden">
       {/* Background Image with Overlay */}
