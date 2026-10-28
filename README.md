@@ -1,8 +1,8 @@
 # Al-Huda Frontend
 
-Al-Huda Frontend is a Next.js app focused on the public navbar and authentication flow.
+This is the frontend application for Al-Huda, built with Next.js. It focuses on public navigation and the complete authentication flow.
 
-## What this app includes
+## Features
 
 - Public navbar
 - Login
@@ -13,7 +13,7 @@ Al-Huda Frontend is a Next.js app focused on the public navbar and authenticatio
 
 ## Tech Stack
 
-- Next.js 16 App Router
+- Next.js 16 (App Router)
 - React 19
 - TypeScript
 - Tailwind CSS 4
@@ -24,22 +24,35 @@ Al-Huda Frontend is a Next.js app focused on the public navbar and authenticatio
 
 ## Project Structure
 
-- `src/app` - layouts and auth pages
-- `src/components` - navbar, forms, and UI primitives
-- `src/services` - server actions that call the backend
-- `src/lib` - helper utilities
+- `src/app` - app routes, layouts, and authentication pages
+- `src/components` - navbar, forms, and reusable UI components
+- `src/services` - server actions and backend communication
+- `src/lib` - helper utilities and shared logic
 
 ## Backend Connection
 
-This frontend expects the backend API to be available through `NEXT_PUBLIC_API_URL`.
+This frontend expects the backend API to be available through the `NEXT_PUBLIC_API_URL` environment variable.
 
 ## Environment Variables
 
-- `NEXT_PUBLIC_API_URL` - backend base URL
+Create a `.env.local` file with the following:
+
+```bash
+NEXT_PUBLIC_API_URL=http://localhost:8000
+```
 
 ## Scripts
 
-- `bun run dev` or `npm run dev` - start the development server
-- `bun run build` or `npm run build` - build the app
-- `bun run start` or `npm run start` - run the production build
-- `bun run lint` or `npm run lint` - run ESLint
+- `npm run dev` or `bun run dev` - start the development server
+- `npm run build` or `bun run build` - create a production build
+- `npm run start` or `bun run start` - run the production build
+- `npm run lint` or `bun run lint` - run ESLint
+
+## Getting Started
+
+```bash
+npm install
+npm run dev
+```
+
+Then open the local app in your browser to continue development.
